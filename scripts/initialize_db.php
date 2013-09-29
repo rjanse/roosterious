@@ -28,11 +28,11 @@
 	echo "OK!\n";
 	
 	echo "Creating activitytype table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS activitytype (id VARCHAR(64), PRIMARY KEY (id));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS activitytype (id VARCHAR(128), PRIMARY KEY (id));");
 	echo "OK!\n";
 	
 	echo "Creating activity table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS activity (id VARCHAR(64), PRIMARY KEY (id));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS activity (id VARCHAR(128), PRIMARY KEY (id));");
 	echo "OK!\n";
 	
   echo "Creating lesson rooms table...";
@@ -48,6 +48,6 @@
 	echo "OK!\n";
 	
 	echo "Creating lesson table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(256), summary VARCHAR(256), location VARCHAR(256), PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, location));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, location));");
 	echo "OK!\n";
 ?>
