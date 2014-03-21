@@ -64,21 +64,15 @@ class ReadLecturerSchedules implements iSubscript {
     echo "OK!\n";
   }
   
-  private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation) {    
-    $sNormalizedRooms = implode(",", $aRooms);
-    $sNormalizedClasses = implode(",", $aClasses);
-    $sNormalizedLecturers = implode(",", $aLecturers);
+  private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation) {
     
     //Create lesson
-    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, rooms, classes, lecturers, description, summary, location) VALUES (" . 
+    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location) VALUES (" . 
     "\"" . $sDate . "\", " .
     "\"" . $sStarttime . "\", " .
     "\"" . $sEndtime . "\", " .
     "\"" . $sActivityId . "\", " . 
     "\"" . $sActivityTypeId . "\", " . 
-    "\"" . $sNormalizedRooms . "\", " . 
-    "\"" . $sNormalizedClasses . "\", " . 
-    "\"" . $sNormalizedLecturers . "\", " . 
     "\"" . $sDescription . "\", " .
     "\"" . $sSummary . "\", " .
     "\"" . $sLocation . "\"" .
