@@ -7,15 +7,34 @@ body {
   background-color: #D4D5D7;
 }
 
-#wrap {
-  width: 800px;
-  margin: 0 auto;
-  background-color: #FFFFFF;
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
-header {
+.row {
+
+}
+
+.headerfield {
+  padding-top: 15px;
+  padding-bottom: 15px;
   background-color: #A3D336;
-  width: 800px;
+  border: 1px solid #222222;
+  font-weight:900;
+}
+
+.schedulefield {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #eee;
+  border: 1px solid #666666;
+  height: 70px;
+  overflow: hidden;
+}
+
+.page-header {
+  background-color: #A3D336;
   height: 120px;
   background-image:url('../img/headerbg.png');
   background-repeat:no-repeat;
@@ -41,5 +60,5 @@ nav {
 #content {
   height: 400px;
   text-align: center;
-  padding-top: 50px;
+  padding-top: 10px;
 }
