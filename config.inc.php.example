@@ -1,4 +1,7 @@
 <?php
+  //Configure base url
+  define('BASE_URL', 'http://localhost/roosterious');
+
   //Configuration of timezine
   define('CONFIG_TIMEZONE', 'Europe/Amsterdam');
   	
