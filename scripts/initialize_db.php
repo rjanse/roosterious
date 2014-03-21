@@ -48,6 +48,6 @@
 	echo "OK!\n";
 	
 	echo "Creating lesson table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, location));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), rooms VARCHAR(256), classes VARCHAR(256), lecturers VARCHAR(256), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, location));");
 	echo "OK!\n";
 ?>
