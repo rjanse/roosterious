@@ -10,6 +10,8 @@
 			$sTitle = "Rooster voor klas " . $sVal;
 		} else if ($sType == "room") {
 			$sTitle = "Rooster voor lokaal " . $sVal;
+		} else if ($sType == "activity") {
+		  $sTitle = "Rooster voor activiteit " . $sVal;
 		}
 		$sUrl = "schedule/" . $sType . "/" . $sVal;
 		renderPage($sType, $sTitle, $sUrl);
@@ -104,7 +106,7 @@
   			}
   			currentdate = lesson.date;
 			row += "<div class=\"col-md-2 schedulefield\">" + lesson.starttime + " - " + lesson.endtime + "</div>";
-			row += "<div class=\"col-md-2 schedulefield\">" + lesson.activity + "</div>";
+			row += "<div class=\"col-md-2 schedulefield\"><button type=\"button\" class=\"btn btn-warning btn-xs tag\" onClick=\"openPage('web/schedule/activity/" + lesson.activity + "');\">" + lesson.activity + "</button></div>";
 			row += "<div class=\"col-md-2 schedulefield\">" + lesson.activitytype + "</div>";
 			
 			row += "<div class=\"col-md-2 schedulefield\">"

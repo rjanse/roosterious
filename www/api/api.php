@@ -89,7 +89,21 @@ Flight::route('GET /schedule/room/@sRoomId\.@sFormat', function($sRoomId, $sForm
 });
 
 /**
- * Get's the schedule for a specified room
+ * Get's the schedule for a specified activity
+ */
+Flight::route('GET /schedule/activity/@sActivityId\.@sFormat', function($sActivityId, $sFormat){
+    $oMysqli = getMysqli();
+    $sQuery = generateLessonQuery("FROM lesson WHERE activity_id = \"" . $sActivityId . "\" ORDER BY date, starttime");
+    
+    if ($oResult = $oMysqli->query($sQuery)) {
+      echo formatLessonResult($sFormat, $oResult); 
+    } else {
+      echo errorInFormat($sFormat);
+    }
+});
+
+/**
+ * Get's the schedule for now
  */
 Flight::route('GET /schedule/now.@sFormat', function($sFormat){
 	$oMysqli = getMysqli();
