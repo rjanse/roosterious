@@ -62,8 +62,18 @@
 				  <a href="api/schedule/lecturer/rgr05.json">api/schedule/lecturer/rgr05.json</a>
 				  of klik onderaan de links op de HTML versies</p>
 			  </div>
-    </div>
+      </div>
     
+      <div class="row">
+			  <div class="col-md-12">
+				  <h4>Juistheid roosters</h4>
+				  <p>Ik geef geen garanties op de juistheid van de roosters. Er zitten nog enkele bugs in en de roosters kunnen ook achterlopen met de echte roosters.</p>
+			  </div>
+      </div>
+      
+      <div class="row footerrow">
+        &copy; Ruud Greven 2014
+      </div>
   </div>
 </body>
 </html>
