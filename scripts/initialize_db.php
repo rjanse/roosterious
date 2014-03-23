@@ -16,11 +16,11 @@
 	echo "OK!\n";
 	
 	echo "Creating room table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS room (id VARCHAR(6), buildingfloor_id CHAR(1), buildingpart_id CHAR(1), fullname VARCHAR(8), PRIMARY KEY (id, buildingfloor_id, buildingpart_id));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS room (id VARCHAR(16), buildingfloor_id CHAR(1), buildingpart_id CHAR(1), fullname VARCHAR(8), PRIMARY KEY (id, buildingfloor_id, buildingpart_id));");
 	echo "OK!\n";
 	
 	echo "Creating class table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS class (id VARCHAR(6), PRIMARY KEY (id));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS class (id VARCHAR(16), PRIMARY KEY (id));");
 	echo "OK!\n";
 	  
   echo "Creating lecturer table...";
@@ -36,11 +36,11 @@
 	echo "OK!\n";
 	
   echo "Creating lesson rooms table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS lessonrooms (lesson_id INT, room_id VARCHAR(6), PRIMARY KEY (lesson_id, room_id));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lessonrooms (lesson_id INT, room_id VARCHAR(16), PRIMARY KEY (lesson_id, room_id));");
 	echo "OK!\n";
 	
   echo "Creating lesson classes table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS lessonclasses (lesson_id INT, class_id VARCHAR(6), PRIMARY KEY (lesson_id, class_id));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lessonclasses (lesson_id INT, class_id VARCHAR(16), PRIMARY KEY (lesson_id, class_id));");
 	echo "OK!\n";
 	
 	echo "Creating lessonlectures table...";
