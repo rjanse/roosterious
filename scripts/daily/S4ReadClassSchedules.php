@@ -1,15 +1,15 @@
 <?php
-class ReadLecturerSchedules implements iSubscript {
+class S4ReadClassSchedules implements iSubscript {
   public function execute($oMysqli) {
-    if ($hDir = opendir(dirname(__FILE__) . "/../../cache/lecturer/")) {
+    if ($hDir = opendir(dirname(__FILE__) . "/../../cache/class/")) {
       while (false !== ($sFile = readdir($hDir))) {
         if ($sFile == '.' || $sFile == '..') { 
           continue; 
         }
-        $sFullPath = dirname(__FILE__) . "/../../cache/lecturer/" . $sFile;
+        $sFullPath = dirname(__FILE__) . "/../../cache/class/" . $sFile;
         if (is_file($sFullPath) && strpos($sFile, ".ics") !== FALSE) {
-          $sLecturerCode = substr($sFile, 0, -4);
-          $this->readLecturerSchedule($oMysqli, $sFullPath, $sLecturerCode);
+          $sClassCode = substr($sFile, 0, -4);
+          $this->readClassSchedule($oMysqli, $sFullPath, $sClassCode);
         } else {
           die("File " . $sFullPath . " doesn't seem to be a file. Nice!");
         }
@@ -19,16 +19,10 @@ class ReadLecturerSchedules implements iSubscript {
     }
   }	
   
-  private function readLecturerSchedule($oMysqli, $sFullPath, $sLecturerId) {
-    echo "Reading lecturer schedule from " . $sLecturerId . " ";
+  private function readClassSchedule($oMysqli, $sFullPath, $sClassCode) {
+    echo "Reading class schedule from " . $sClassCode . " ";
     //Retrieve data
     $oiCal = getiCalEvents($sFullPath);
-    $sLecturerString = $oiCal->cal['VCALENDAR']['X-WR-CALNAME'];
-    $sLecturerName = trim(substr($sLecturerString, 20));
-    
-    //Add lecturer to database
-    $oMysqli->query("INSERT INTO lecturer(id, name) VALUES (\"" . $sLecturerId . "\", \"" . $sLecturerName . "\") ON DUPLICATE KEY UPDATE name = \"" . $sLecturerName . "\";");
-    
     if ($oiCal->hasEvents()) {
       $aEvents = $oiCal->events();
     
@@ -46,18 +40,34 @@ class ReadLecturerSchedules implements iSubscript {
         $sActivityId = $sSummary;
       
         //Extract classes and activitytype from description
-        $sClasses = trim(substr($sDescription, 5, strpos($sDescription, "(") - 6));
-        preg_match_all("/[A-Za-z0-9]+/", $sClasses, $aClasses);
-        $aClasses = array_unique($aClasses[0]);
-        $sActivityTypeId = trim(substr($sDescription, strpos($sDescription, ")") + 1));
+        $aClasses = array($sClassCode);
       
         //Extract class id from location
         $aLocationParts = preg_split("/[,]+/", $sLocation);
         $aRooms = array_unique(preg_split("/[\s\|]+/", trim($aLocationParts[1])));
       
         //Create lecturers array
-        $aLecturers = array($sLecturerId);
-      
+        //Example format: "Docent G.M.T. Deterd Oude Weme|E.H. Ruiterkamp|M.H.T. Jansen|J.E. Nawijn (APO) SLB"
+        //Example format: "Docent <doc>|<doc> (<ACADEMIE>) <SUBJECT>
+        $aLecturers = array();
+        $sLecturers = trim(substr($sDescription, 6, strpos($sDescription, "(") - 6));
+        $aLecturerFullName = explode("|", $sLecturers);
+        $aLecturerFullName = array_unique($aLecturerFullName);
+        foreach ($aLecturerFullName as $sLecturerFullName) {
+          if ($sLecturerFullName!="") {
+            $sQuery = "SELECT id, name FROM lecturer WHERE name=\"" . $sLecturerFullName . "\";";
+            $oResult = $oMysqli->query($sQuery);
+            $oObj = $oResult->fetch_object();
+            if ($oObj!=null) {
+              array_push($aLecturers, $oObj->id);
+            } else {
+              echo "No lecturer found for " . $sLecturerFullName . "\n";
+            }
+          }
+        }
+        
+        $sActivityTypeId = trim(substr($sDescription, strpos($sDescription, ")") + 1));
+        
         sort($aRooms);
         sort($aClasses);
         sort($aLecturers);

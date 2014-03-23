@@ -1,5 +1,5 @@
 <?php
-class DownloadClassSchedules implements iSubscript {
+class S2DownloadClassSchedules implements iSubscript {
   public function execute($oMysqli) {
     $sAcademysHtml = getHtmlString("http://roosters.saxion.nl/groups");
     preg_match_all ("/\/groups\/academy:[A-Za-z0-9]*\"/", $sAcademysHtml, $aMatches, PREG_PATTERN_ORDER);
