@@ -71,9 +71,13 @@ class S3ReadLecturerSchedules implements iSubscript {
   }
   
   private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation) {
-    
+    if (sizeof($aRooms) != 0) {
+      $sRooms = implode(",", $aRooms);
+    } else {
+      $sRooms = "NULL";
+    }
     //Create lesson
-    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location) VALUES (" . 
+    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location, rooms) VALUES (" . 
     "\"" . $sDate . "\", " .
     "\"" . $sStarttime . "\", " .
     "\"" . $sEndtime . "\", " .
@@ -81,13 +85,14 @@ class S3ReadLecturerSchedules implements iSubscript {
     "\"" . $sActivityTypeId . "\", " . 
     "\"" . $sDescription . "\", " .
     "\"" . $sSummary . "\", " .
-    "\"" . $sLocation . "\"" .
+    "\"" . $sLocation . "\", " .
+    "\"" . $sRooms . "\"" .
     ");";
     
     if ($oMysqli->query($sQuery)) {
       $iLessonId = $oMysqli->insert_id;
     } else {
-      $sQuery = "SELECT id FROM lesson WHERE date=\"" . $sDate . "\" AND starttime=\"" . $sStarttime . "\" AND endtime=\"" . $sEndtime . "\" AND location LIKE \"" . substr($sLocation,0,512) . "%\";";
+      $sQuery = "SELECT id FROM lesson WHERE date=\"" . $sDate . "\" AND starttime=\"" . $sStarttime . "\" AND endtime=\"" . $sEndtime . "\" AND rooms = \"" . $sRooms . "\";";
       $oResult = $oMysqli->query($sQuery);
       $oObj = $oResult->fetch_object();
       $iLessonId = $oObj->id;
