@@ -61,6 +61,7 @@ class S4ReadClassSchedules implements iSubscript {
             if ($oObj!=null) {
               array_push($aLecturers, $oObj->id);
             } else {
+              array_push($aLecturers, "NULL");
               echo "No lecturer found for " . $sLecturerFullName . "\n";
             }
           }
