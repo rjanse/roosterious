@@ -1,3 +1,6 @@
+/**
+ * Common
+ */
 * {
   margin: 0;
   padding: 0;
@@ -12,35 +15,12 @@ body {
   padding-left: 15px;
 }
 
-.row {
-
-}
-
-.headerfield {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: #A3D336;
-  border: 1px solid #222222;
-  font-weight:900;
-}
-
-.schedulefield {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background-color: #eee;
-  border: 1px solid #666666;
-  height: 70px;
-  overflow: hidden;
-}
-
-.page-header {
-  background-color: #A3D336;
+.headerrow {
+  background-color: #6E5397;
   height: 120px;
-  background-image:url('../img/headerbg.png');
-  background-repeat:no-repeat;
 }
 
-header IMG {
+.headerrow IMG {
   margin-top: 10px;
   margin-left: 50px;
 }
@@ -52,7 +32,7 @@ nav {
 
 #searchbar {
   margin-top: 20px;
-  background-color: #A3D336;
+  background-color: #6E5397;
   height: 100px;
   text-align: center;
 }
@@ -61,4 +41,83 @@ nav {
   height: 400px;
   text-align: center;
   padding-top: 10px;
+}
+
+.footerrow {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid #666666;
+}
+
+/**
+ * Home page
+ */
+.homepageheaderrow {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-weight:900;
+  color: #FFFFFF;
+}
+
+.homepageheaderfield {
+  border: 1px solid #222222;
+  background-color: #AE85ED;
+}
+
+.homepagerow {
+
+}
+
+.homepagefield {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #FFFFFF;
+  border: 1px solid #222222;
+}
+/**
+ * Schedule page
+ */
+.scheduleheaderrow {
+  padding-top: 15px;
+  padding-bottom: 5px;
+  font-weight:900;
+  color: #FFFFFF;
+}
+
+.scheduleheaderfield {
+  border: 1px solid #222222;
+  background-color: #AE85ED;
+}
+
+.scheduledayrow {
+  background-color: #6E5397;
+  color: #FFFFFF;
+  margin-top: 15px;
+  border: 1px solid #222222;
+}
+
+.schedulerow {
+  height: 70px;
+  transition: height 1s;
+  -moz-transition: height 1s; /* Firefox 4 */
+  -webkit-transition: height 1s; /* Safari and Chrome */
+  -o-transition: height 1s; /* Opera */
+  -ms-transition: height 1s; /* IE9 (maybe) */
+}
+
+.schedulerow:hover {
+  height: 200px;
+}
+
+.schedulefield {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  height: 100%;
+  background-color: #eee;
+  border: 1px solid #666666;
+  overflow: hidden;
+}
+
+.tag {
+  margin: 3px;
 }

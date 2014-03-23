@@ -11,12 +11,12 @@
 		} else if ($sType == "room") {
 			$sTitle = "Rooster voor lokaal " . $sVal;
 		}
-		$sUrl = "api/schedule/" . $sType . "/" . $sVal . ".json";
+		$sUrl = "schedule/" . $sType . "/" . $sVal;
 		renderPage($sType, $sTitle, $sUrl);
 	});
 	
 	Flight::route('GET /schedule/now', function() {
-		renderPage("now", "Lessen op dit moment", "api/schedule/now.json");
+		renderPage("now", "Lessen op dit moment", "schedule/now");
 	});
 	
 	Flight::start();
@@ -33,32 +33,39 @@
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/roosterious.css"/>
     
-  <script src="js/jquery-1.11.0.min.js">
+  <script src="js/jquery-1.11.0.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script>
+    function openPage(name) {
+      window.location = name;
+    }
   </script>
 </head>
 <body>
   <div class="container">
-  	<div class="page-header">
-     	<img src="img/logo.png"/>
-    </div>
-    
     <div id="content">
     		<h1 id="title"></h1>
     		<!-- Schedule header -->
-			<div class="row">
-				<div class="col-md-2 headerfield">Tijd</div>
-				<div class="col-md-2 headerfield">activiteit</div>
-				<div class="col-md-2 headerfield">activiteittype</div>
-				<div class="col-md-2 headerfield">klassen</div>
-				<div class="col-md-2 headerfield">docenten</div>
-				<div class="col-md-2 headerfield">lokalen</div>
+			<div class="row scheduleheaderrow">
+				<div class="col-md-2 scheduleheaderfield">Tijd</div>
+				<div class="col-md-2 scheduleheaderfield">activiteit</div>
+				<div class="col-md-2 scheduleheaderfield">activiteittype</div>
+				<div class="col-md-2 scheduleheaderfield">klassen</div>
+				<div class="col-md-2 scheduleheaderfield">docenten</div>
+				<div class="col-md-2 scheduleheaderfield">lokalen</div>
 			</div>
     		
-    		<div id="schedule">
+    	<div id="schedule">
 
-    		</div>
-      	<table>
+    	</div>
+    	
+    	<div class="row footerrow">
+    	  Download dit rooster in 
+    	    <button type="button" class="btn btn-default btn-xs" onClick="openPage('api/<?php echo $sApiUrl ?>.json');">JSON</button> 
+    	    of 
+    	    <button type="button" class="btn btn-default btn-xs" onClick="openPage('api/<?php echo $sApiUrl ?>.ical');">ICAL</button> 
+    	    (not supported yet).
+    	</div>
     </div>
     
   </div>
@@ -66,7 +73,7 @@
   <script>
   	var sType = "<?php echo $sType ?>";
   	var sTitle = "<?php echo $sTitle ?>";
-  	var sApiurl = "<?php echo $sApiUrl ?>";
+  	var sApiurl = "api/<?php echo $sApiUrl ?>.json";
   	$("#title").append(sTitle);
   	 
   	$.getJSON( sApiurl , function( data ) {
@@ -91,9 +98,9 @@
   					dayofweek = "zaterdag";
   				}
   				
-  				row += "</div><h4>" + dayofweek + " " + lesson.date + "</h4><div class=\"row\">";
+  				row += "</div><div class=\"row scheduledayrow\">" + dayofweek + " " + lesson.date + "</div><div class=\"row schedulerow\">";
   			} else {
-  				row += "</div><div class=\"row\">";
+  				row += "</div><div class=\"row schedulerow\">";
   			}
   			currentdate = lesson.date;
 			row += "<div class=\"col-md-2 schedulefield\">" + lesson.starttime + " - " + lesson.endtime + "</div>";
@@ -102,7 +109,16 @@
 			
 			row += "<div class=\"col-md-2 schedulefield\">"
 			if (lesson.classes) {
-				row += lesson.classes.replace(/\,/g,", ");
+				$.each(lesson.classes.split(","), function(index, tclass) {
+				  tclass = tclass.trim();
+			    var classstring;
+			    if (tclass != "NULL") {
+			      classstring = "<button type=\"button\" class=\"btn btn-success btn-xs tag\" onClick=\"openPage('web/schedule/class/" + tclass + "');\">" + tclass + "</button>";
+			    } else {
+			      classstring = "<span class=\"tag taglecturer\">(Onbekende klas)</span>";
+			    }
+			    row+= classstring;
+				});
 			} else {
 				row += "Geen klassen";
 			}	
@@ -110,7 +126,16 @@
 			
 			row += "<div class=\"col-md-2 schedulefield\">"
 			if (lesson.lecturers) {
-				row += lesson.lecturers.replace(/\,/g,", ");
+			  $.each(lesson.lecturers.split(","), function(index, lecturer) {
+			    lecturer = lecturer.trim();
+			    var lecturerstring;
+			    if (lecturer != "NULL") {
+			      lecturerstring = "<button type=\"button\" class=\"btn btn-danger btn-xs tag\" onClick=\"openPage('web/schedule/lecturer/" + lecturer + "');\">" + lecturer + "</button>";
+			    } else {
+			      lecturerstring = "<span class=\"tag taglecturer\">(Onbekende docent)</span>";
+			    }
+			    row+= lecturerstring;
+			  });
 			} else {
 				row += "Geen docenten";
 			}
@@ -118,7 +143,16 @@
 			
 			row += "<div class=\"col-md-2 schedulefield\">"
 			if (lesson.rooms) {
-				row += lesson.rooms.replace(/\,/g,", ");
+				$.each(lesson.rooms.split(","), function(index, room) {
+				  room = room.trim();
+			    var roomstring;
+			    if (room != "NULL") {
+			      roomstring = "<button type=\"button\" class=\"btn btn-primary btn-xs tag\" onClick=\"openPage('web/schedule/room/" + room + "');\">" + room + "</button>";
+			    } else {
+			      roomstring = "<span class=\"tag taglecturer\">(Onbekend lokaal)</span>";
+			    }
+			    row+= roomstring;
+				});
 			} else {
 				row += "Geen lokalen";
 			}
