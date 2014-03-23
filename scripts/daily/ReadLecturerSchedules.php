@@ -23,6 +23,12 @@ class ReadLecturerSchedules implements iSubscript {
     echo "Reading lecturer schedule from " . $sLecturerId . " ";
     //Retrieve data
     $oiCal = getiCalEvents($sFullPath);
+    $sLecturerString = $oiCal->cal['VCALENDAR']['X-WR-CALNAME'];
+    $sLecturerName = trim(substr($sLecturerString, 20));
+    
+    //Add lecturer to database
+    $oMysqli->query("INSERT INTO lecturer(id, name) VALUES (\"" . $sLecturerId . "\", \"" . $sLecturerName . "\") ON DUPLICATE KEY UPDATE name = \"" . $sLecturerName . "\";");
+    
     if ($oiCal->hasEvents()) {
       $aEvents = $oiCal->events();
     
