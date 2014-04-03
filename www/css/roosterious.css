@@ -75,6 +75,7 @@ nav {
   background-color: #FFFFFF;
   border: 1px solid #222222;
 }
+
 /**
  * Schedule page
  */
@@ -141,4 +142,51 @@ nav {
 
 .tag {
   margin: 3px;
+}
+
+/**
+ * Stats page
+ **/
+table {
+  border-collapse:collapse;
+}
+
+table, th, td {
+  border: 1px solid #222222;
+}
+
+th {
+  text-align: center;
+  background-color: #6E5397;
+  color: #FFFFFF;
+  height: 120px;
+}
+
+th > div {
+  -webkit-transform: rotate(-45deg); 
+  -moz-transform: rotate(-45deg);
+}
+
+td {
+  text-align: center;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+tr td {
+  background-color: #fff;
+}
+
+tr:nth-child(even) td:nth-child(odd)
+{
+  background-color: #eee;
+}
+
+tr:nth-child(odd) td:nth-child(even)
+{
+  background-color: #eee;
+}
+
+td.stats_firstcol {
+  background-color: #AE85ED;
 }

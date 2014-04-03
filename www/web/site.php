@@ -14,17 +14,29 @@
 		  $sTitle = "Rooster voor activiteit " . $sVal;
 		}
 		$sUrl = "schedule/" . $sType . "/" . $sVal;
-		renderPage($sType, $sTitle, $sUrl);
+		renderSchedulePage($sType, $sTitle, $sUrl);
 	});
 	
 	Flight::route('GET /schedule/now', function() {
-		renderPage("now", "Lessen op dit moment", "schedule/now");
+		renderSchedulePage("now", "Lessen op dit moment", "schedule/now");
+	});
+	
+	Flight::route('GET /stats/@sType/@sVal', function($sType, $sVal){
+	  if ($sType == "lecturer") {
+			$sTitle = "Statistieken voor docent " . $sVal;
+		}
+		$sUrl = "stats/" . $sType . "/" . $sVal;
+	  renderStatsPage($sTitle, $sUrl);
 	});
 	
 	Flight::start();
 	
 	
-	function renderPage($sType, $sTitle, $sApiUrl) {
+	/**
+	 * RENDERS THE SCHEDULE PAGE
+	 *
+	 */
+	function renderSchedulePage($sType, $sTitle, $sApiUrl) {
 	?>
 	<html>
 <head>
@@ -191,6 +203,99 @@
 </body>
 </html>
 	
+<?php
+}
+
+
+
+
+	/**
+	 * RENDERS THE SCHEDULE PAGE
+	 *
+	 */
+	function renderStatsPage($sTitle, $sApiUrl) {
+	?>
+		<html>
+<head>
+  <title><?php echo $sTitle ?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="<?php echo BASE_URL ?>">
+  
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/roosterious.css"/>
+    
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script>
+    function openPage(name) {
+      window.location = name;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div id="content">
+    		<h1 id="title"></h1>
+    		
+    		<div id="statstable">
+    		
+    		</div>
+    </div>
+  </div>
+  <script>
+  	var sTitle = "<?php echo $sTitle ?>";
+  	var sApiurl = "api/<?php echo $sApiUrl ?>.json";
+  	$("#title").append(sTitle);
+  	
+  	$.getJSON( sApiurl , function( data ) {
+  	  var output = "";
+  	  var columns = new Array();
+  	  var rows = new Array();
+  	  
+  	  sOutput = "<table><tr>";
+  	  sOutput += "<th>&nbsp;</th>";
+  	  $.each(data.response, function(index, statsrow){
+  	    if (columns.indexOf(statsrow.activity_id_summary) == -1) {
+  	      columns.push(statsrow.activity_id_summary);
+  	      sOutput += "<th><div>" + statsrow.activity_id_summary + "</div></th>";
+  	    }
+  	    if (rows.indexOf(statsrow.weeknr) == -1) {
+  	      rows.push(statsrow.weeknr);
+  	    }
+  	  });
+  	  sOutput += "</tr>";
+  	  
+  	  $.each(rows, function(index, row){
+  	    sOutput += "<tr>";
+  	    sOutput += "<td class=\"stats_firstcol\">" + row + "</td>";
+  	    
+  	    $.each(columns, function(index, col){
+  	      var found = false;
+  	      $.each(data.response, function(index, statsrow){
+  	        if (statsrow.weeknr == row && statsrow.activity_id_summary == col) {
+  	          sOutput += "<td>" + statsrow.number + "</td>";
+  	          found = true;
+  	        } 
+  	      });
+  	      if (!found) {
+  	        sOutput += "<td>&nbsp;</td>";
+  	      }
+  	    });
+
+  	    
+  	    sOutput += "</tr>";
+  	  });
+  	  
+  	  
+  	  
+  	  sOutput += "</table>";
+  	  $("#statstable").append(sOutput);
+  	}).fail(function() {
+    	console.log( "error" );
+  	})
+  </script>
+</body>
+</html>
 <?php
 }
 ?>

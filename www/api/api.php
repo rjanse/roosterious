@@ -120,5 +120,20 @@ Flight::route('GET /schedule/now.@sFormat', function($sFormat){
       echo errorInFormat($sFormat);
     }	
 });
+
+/**
+ * Get's the stats for lecturer
+ */
+Flight::route('GET /stats/lecturer/@sLecturerId.json', function($sLecturerId) {
+	$oMysqli = getMysqli();
+	
+	$sQuery = "SELECT DISTINCT YEARWEEK(date) AS weeknr, activity_id AS activity_id_summary, (SELECT count(*) AS number FROM lesson,lessonlecturers WHERE activity_id = activity_id_summary AND lesson.id = lessonlecturers.lesson_id AND lecturer_id=\"" . $sLecturerId . "\" AND YEARWEEK(date) = weeknr) AS number FROM lesson,lessonlecturers WHERE lesson.id = lessonlecturers.lesson_id AND lecturer_id = \"" . $sLecturerId . "\" ORDER BY weeknr, activity_id_summary;";
+    if ($oResult = $oMysqli->query($sQuery)) {
+      echo formatLessonResult("json", $oResult); 
+    } else {
+      echo errorInFormat($sFormat);
+    }	
+}); 
+
 Flight::start();
 ?>
