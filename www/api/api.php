@@ -121,9 +121,11 @@ Flight::route('GET /schedule/now.@sFormat', function($sFormat){
     }	
 });
 
+
 /**
  * Get's the stats for lecturer
  */
+ /**
 Flight::route('GET /stats/lecturer/@sLecturerId.json', function($sLecturerId) {
 	$oMysqli = getMysqli();
 	
@@ -134,6 +136,6 @@ Flight::route('GET /stats/lecturer/@sLecturerId.json', function($sLecturerId) {
       echo errorInFormat($sFormat);
     }	
 }); 
-
+**/
 Flight::start();
 ?>
