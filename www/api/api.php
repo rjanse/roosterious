@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/../../inc/lib/flight/flight/Flight.php");
  * Returns a generic query to get lesson rows
  */
 function generateLessonQuery($sFrom) {
-	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, activity_id AS activity, activitytype_id AS activitytype,
+	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, activity_id AS activity, activitytype_id AS activitytype, beta AS is_beta,
   (SELECT GROUP_CONCAT(lecturer_id) FROM lessonlecturers WHERE lesson_id=id) AS lecturers, 
   (SELECT GROUP_CONCAT(class_id) FROM lessonclasses WHERE lesson_id=id) AS classes,
   (SELECT GROUP_CONCAT(room_id) FROM lessonrooms WHERE lesson_id=id) AS rooms

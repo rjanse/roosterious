@@ -81,7 +81,12 @@
   	$.getJSON( sApiurl , function( data ) {
   		var row = "";
   		var currentdate = "";
+  		
   		$.each(data.response, function(index, lesson){
+  		  var styles = "row schedulerow";
+  		  if (lesson.is_beta == "1") {
+  		    styles = styles + " schedulerow_beta";
+  		  }
   			if (currentdate != lesson.date) {
   				var dayofweek = "";
   				if (lesson.day_of_week == 0) {
@@ -100,66 +105,66 @@
   					dayofweek = "zaterdag";
   				}
   				
-  				row += "</div><div class=\"row scheduledayrow\">" + dayofweek + " " + lesson.date + "</div><div class=\"row schedulerow\">";
+  				row += "</div><div class=\"row scheduledayrow\">" + dayofweek + " " + lesson.date + "</div><div class=\"" + styles + "\">";
   			} else {
-  				row += "</div><div class=\"row schedulerow\">";
+  				row += "</div><div class=\"" + styles + "\">";
   			}
   			currentdate = lesson.date;
-			row += "<div class=\"col-md-2 schedulefield\">" + lesson.starttime + " - " + lesson.endtime + "</div>";
-			row += "<div class=\"col-md-2 schedulefield\"><button type=\"button\" class=\"btn btn-warning btn-xs tag\" onClick=\"openPage('web/schedule/activity/" + lesson.activity + "');\">" + lesson.activity + "</button></div>";
-			row += "<div class=\"col-md-2 schedulefield\">" + lesson.activitytype + "</div>";
-			
-			row += "<div class=\"col-md-2 schedulefield\">"
-			if (lesson.classes) {
-				$.each(lesson.classes.split(","), function(index, tclass) {
-				  tclass = tclass.trim();
-			    var classstring;
-			    if (tclass != "NULL") {
-			      classstring = "<button type=\"button\" class=\"btn btn-success btn-xs tag\" onClick=\"openPage('web/schedule/class/" + tclass + "');\">" + tclass + "</button>";
-			    } else {
-			      classstring = "<span class=\"tag taglecturer\">(Onbekende klas)</span>";
-			    }
-			    row+= classstring;
-				});
-			} else {
-				row += "Geen klassen";
-			}	
-			row += "</div>";
-			
-			row += "<div class=\"col-md-2 schedulefield\">"
-			if (lesson.lecturers) {
-			  $.each(lesson.lecturers.split(","), function(index, lecturer) {
-			    lecturer = lecturer.trim();
-			    var lecturerstring;
-			    if (lecturer != "NULL") {
-			      lecturerstring = "<button type=\"button\" class=\"btn btn-danger btn-xs tag\" onClick=\"openPage('web/schedule/lecturer/" + lecturer + "');\">" + lecturer + "</button>";
-			    } else {
-			      lecturerstring = "<span class=\"tag taglecturer\">(Onbekende docent)</span>";
-			    }
-			    row+= lecturerstring;
-			  });
-			} else {
-				row += "Geen docenten";
-			}
-			row += "</div>";
-			
-			row += "<div class=\"col-md-2 schedulefield\">"
-			if (lesson.rooms) {
-				$.each(lesson.rooms.split(","), function(index, room) {
-				  room = room.trim();
-			    var roomstring;
-			    if (room != "NULL") {
-			      roomstring = "<button type=\"button\" class=\"btn btn-primary btn-xs tag\" onClick=\"openPage('web/schedule/room/" + room + "');\">" + room + "</button>";
-			    } else {
-			      roomstring = "<span class=\"tag taglecturer\">(Onbekend lokaal)</span>";
-			    }
-			    row+= roomstring;
-				});
-			} else {
-				row += "Geen lokalen";
-			}
-			row += "</div>";
-		});
+        row += "<div class=\"col-md-2 schedulefield\">" + lesson.starttime + " - " + lesson.endtime + "</div>";
+        row += "<div class=\"col-md-2 schedulefield\"><button type=\"button\" class=\"btn btn-warning btn-xs tag\" onClick=\"openPage('web/schedule/activity/" + lesson.activity + "');\">" + lesson.activity + "</button></div>";
+        row += "<div class=\"col-md-2 schedulefield\">" + lesson.activitytype + "</div>";
+      
+        row += "<div class=\"col-md-2 schedulefield\">"
+        if (lesson.classes) {
+          $.each(lesson.classes.split(","), function(index, tclass) {
+            tclass = tclass.trim();
+            var classstring;
+            if (tclass != "NULL") {
+              classstring = "<button type=\"button\" class=\"btn btn-success btn-xs tag\" onClick=\"openPage('web/schedule/class/" + tclass + "');\">" + tclass + "</button>";
+            } else {
+              classstring = "<span class=\"tag taglecturer\">(Onbekende klas)</span>";
+            }
+            row+= classstring;
+          });
+        } else {
+          row += "Geen klassen";
+        }	
+        row += "</div>";
+      
+        row += "<div class=\"col-md-2 schedulefield\">"
+        if (lesson.lecturers) {
+          $.each(lesson.lecturers.split(","), function(index, lecturer) {
+            lecturer = lecturer.trim();
+            var lecturerstring;
+            if (lecturer != "NULL") {
+              lecturerstring = "<button type=\"button\" class=\"btn btn-danger btn-xs tag\" onClick=\"openPage('web/schedule/lecturer/" + lecturer + "');\">" + lecturer + "</button>";
+            } else {
+              lecturerstring = "<span class=\"tag taglecturer\">(Onbekende docent)</span>";
+            }
+            row+= lecturerstring;
+          });
+        } else {
+          row += "Geen docenten";
+        }
+        row += "</div>";
+      
+        row += "<div class=\"col-md-2 schedulefield\">"
+        if (lesson.rooms) {
+          $.each(lesson.rooms.split(","), function(index, room) {
+            room = room.trim();
+            var roomstring;
+            if (room != "NULL") {
+              roomstring = "<button type=\"button\" class=\"btn btn-primary btn-xs tag\" onClick=\"openPage('web/schedule/room/" + room + "');\">" + room + "</button>";
+            } else {
+              roomstring = "<span class=\"tag taglecturer\">(Onbekend lokaal)</span>";
+            }
+            row+= roomstring;
+          });
+        } else {
+          row += "Geen lokalen";
+        }
+        row += "</div>";
+      });
   		$("#schedule").append(row);
   	}).fail(function() {
     	console.log( "error" );
