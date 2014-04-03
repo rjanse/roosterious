@@ -62,11 +62,19 @@
     	</div>
     	
     	<div class="row footerrow">
-    	  Download dit rooster in 
+    	  <p>
+    	    <span style="background-color: #eee; padding: 5px;">Voorbeeld</span> = Les uit normale lesrooster.<br/>
+    	    &nbsp;<br/>
+    	    <span style="background-color: #FBFBC8; padding: 5px;">Voorbeeld</span> = Les uit het beta lesrooster.<br/>
+    	    &nbsp;<br/>
+    	    Alle gekleurde blokken (activiteiten, klassen, docenten en lokalen) zijn klikbaar.</br>
+    	  </p>
+    	  &nbsp;<br/>
+    	  <p>Download dit rooster in 
     	    <button type="button" class="btn btn-default btn-xs" onClick="openPage('api/<?php echo $sApiUrl ?>.json');">JSON</button> 
     	    of 
     	    <button type="button" class="btn btn-default btn-xs" onClick="openPage('api/<?php echo $sApiUrl ?>.ical');">ICAL</button> 
-    	    (not supported yet).
+    	    (not supported yet).</p>
     	</div>
     </div>
     
