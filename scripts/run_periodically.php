@@ -11,11 +11,9 @@ date_default_timezone_set(CONFIG_TIMEZONE);
 $oMysqli = getMysqli();
     
 //Iterate over scriptfiles  
-if ($hDir = opendir(dirname(__FILE__) . "/" . $sPeriod)) {
-  while (false !== ($sFile = readdir($hDir))) {
-    if ($sFile == '.' || $sFile == '..') { 
-      continue; 
-    }
+$aFileList = scandir(dirname(__FILE__) . "/" . $sPeriod);
+foreach ($aFileList as $sFile) {
+  if ($sFile != '.' || $sFile != '..') { 
     $sClassName = str_replace(".php","", $sFile); 
     $sFile  = dirname(__FILE__) . "/" . $sPeriod . "/".$sFile;
     if (is_file($sFile)) {
@@ -24,8 +22,6 @@ if ($hDir = opendir(dirname(__FILE__) . "/" . $sPeriod)) {
       $oSubscript->execute($oMysqli);
     }
   }
-} else {
-  die("Can't run the given scripts, no valid period / subdirectory");
 }
 
 //Close database connection
