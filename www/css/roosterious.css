@@ -81,6 +81,7 @@ nav {
 .scheduleheaderrow {
   padding-top: 15px;
   padding-bottom: 5px;
+  margin-bottom: -35px;
   font-weight:900;
   color: #FFFFFF;
 }
@@ -97,6 +98,19 @@ nav {
   border: 1px solid #222222;
 }
 
+.scheduledayrow_nextweek {
+
+}
+
+.scheduledayrow_separator {
+  background-color: #FFFFFF;
+  font-size: 16px;
+  height: 30px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border: 1px solid #222222;
+}
+
 .schedulerow {
   background-color: #eee;
   height: 70px;
@@ -110,6 +124,8 @@ nav {
 .schedulerow_beta {
   background-color: #FBFBC8;
 }
+
+
 
 .schedulerow:hover {
   height: 200px;

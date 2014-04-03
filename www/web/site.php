@@ -81,12 +81,15 @@
   	$.getJSON( sApiurl , function( data ) {
   		var row = "";
   		var currentdate = "";
+  		var currentweek = "";
   		
   		$.each(data.response, function(index, lesson){
   		  var styles = "row schedulerow";
   		  if (lesson.is_beta == "1") {
   		    styles = styles + " schedulerow_beta";
   		  }
+  		  
+  		  //Check day of lesson date
   			if (currentdate != lesson.date) {
   				var dayofweek = "";
   				if (lesson.day_of_week == 0) {
@@ -105,11 +108,18 @@
   					dayofweek = "zaterdag";
   				}
   				
-  				row += "</div><div class=\"row scheduledayrow\">" + dayofweek + " " + lesson.date + "</div><div class=\"" + styles + "\">";
+  				if (currentweek != lesson.weeknr) {
+  		      row += "</div><div class=\"row scheduledayrow_separator\">Week " + lesson.weeknr + "</div><div class=\"row scheduledayrow scheduledayrow_nextweek\">" + dayofweek + " " + lesson.date + "</div><div class=\"" + styles + "\">";
+  		    } else {
+  		      row += "</div><div class=\"row scheduledayrow\">" + dayofweek + " " + lesson.date + "</div><div class=\"" + styles + "\">";
+  		    }
+  				
   			} else {
   				row += "</div><div class=\"" + styles + "\">";
   			}
   			currentdate = lesson.date;
+  			currentweek = lesson.weeknr;
+  			
         row += "<div class=\"col-md-2 schedulefield\">" + lesson.starttime + " - " + lesson.endtime + "</div>";
         row += "<div class=\"col-md-2 schedulefield\"><button type=\"button\" class=\"btn btn-warning btn-xs tag\" onClick=\"openPage('web/schedule/activity/" + lesson.activity + "');\">" + lesson.activity + "</button></div>";
         row += "<div class=\"col-md-2 schedulefield\">" + lesson.activitytype + "</div>";
