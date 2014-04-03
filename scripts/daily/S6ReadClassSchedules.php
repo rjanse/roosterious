@@ -1,6 +1,7 @@
 <?php
-class S4ReadClassSchedules implements iSubscript {
+class S6ReadClassSchedules implements iSubscript {
   public function execute($oMysqli) {
+    //Read normal schedules
     if ($hDir = opendir(dirname(__FILE__) . "/../../cache/class/")) {
       while (false !== ($sFile = readdir($hDir))) {
         if ($sFile == '.' || $sFile == '..') { 
@@ -9,7 +10,25 @@ class S4ReadClassSchedules implements iSubscript {
         $sFullPath = dirname(__FILE__) . "/../../cache/class/" . $sFile;
         if (is_file($sFullPath) && strpos($sFile, ".ics") !== FALSE) {
           $sClassCode = substr($sFile, 0, -4);
-          $this->readClassSchedule($oMysqli, $sFullPath, $sClassCode);
+          $this->readClassSchedule($oMysqli, $sFullPath, $sClassCode, false);
+        } else {
+          die("File " . $sFullPath . " doesn't seem to be a file. Nice!");
+        }
+      }
+    } else {
+      die("Can't run the given scripts, no valid period / subdirectory");
+    }
+    
+    //Read beta schedules
+    if ($hDir = opendir(dirname(__FILE__) . "/../../cache/class_beta/")) {
+      while (false !== ($sFile = readdir($hDir))) {
+        if ($sFile == '.' || $sFile == '..') { 
+          continue; 
+        }
+        $sFullPath = dirname(__FILE__) . "/../../cache/class_beta/" . $sFile;
+        if (is_file($sFullPath) && strpos($sFile, ".ics") !== FALSE) {
+          $sClassCode = substr($sFile, 0, -4);
+          $this->readClassSchedule($oMysqli, $sFullPath, $sClassCode, false);
         } else {
           die("File " . $sFullPath . " doesn't seem to be a file. Nice!");
         }
@@ -19,7 +38,7 @@ class S4ReadClassSchedules implements iSubscript {
     }
   }	
   
-  private function readClassSchedule($oMysqli, $sFullPath, $sClassCode) {
+  private function readClassSchedule($oMysqli, $sFullPath, $sClassCode, $bIsBeta) {
     echo "Reading class schedule from " . $sClassCode . " ";
     //Retrieve data
     $oiCal = getiCalEvents($sFullPath);
@@ -74,14 +93,14 @@ class S4ReadClassSchedules implements iSubscript {
         sort($aLecturers);
       
         //Add entry
-        $this->createEntry($oMysqli, $sDate, $sStartTime, $sEndTime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation);
+        $this->createEntry($oMysqli, $sDate, $sStartTime, $sEndTime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation, $bIsBeta);
         echo ".";
       }
     }
     echo "OK!\n";
   }
   
-  private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation) {
+  private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation, $bBeta) {
     if (sizeof($aRooms) != 0) {
       $sRooms = implode(",", $aRooms);
     } else {
@@ -89,7 +108,7 @@ class S4ReadClassSchedules implements iSubscript {
     }
     
     //Create lesson
-    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location, rooms) VALUES (" . 
+    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location, rooms, beta) VALUES (" . 
     "\"" . $sDate . "\", " .
     "\"" . $sStarttime . "\", " .
     "\"" . $sEndtime . "\", " .
@@ -98,7 +117,8 @@ class S4ReadClassSchedules implements iSubscript {
     "\"" . $sDescription . "\", " .
     "\"" . $sSummary . "\", " .
     "\"" . $sLocation . "\", " .
-    "\"" . $sRooms . "\"" .
+    "\"" . $sRooms . "\", " .
+    "\"" . $bBeta . "\"" . 
     ");";
     
     if ($oMysqli->query($sQuery)) {

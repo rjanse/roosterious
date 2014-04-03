@@ -1,6 +1,7 @@
 <?php
-class S3ReadLecturerSchedules implements iSubscript {
+class S5ReadLecturerSchedules implements iSubscript {
   public function execute($oMysqli) {
+    //Read normal schedules
     if ($hDir = opendir(dirname(__FILE__) . "/../../cache/lecturer/")) {
       while (false !== ($sFile = readdir($hDir))) {
         if ($sFile == '.' || $sFile == '..') { 
@@ -9,7 +10,25 @@ class S3ReadLecturerSchedules implements iSubscript {
         $sFullPath = dirname(__FILE__) . "/../../cache/lecturer/" . $sFile;
         if (is_file($sFullPath) && strpos($sFile, ".ics") !== FALSE) {
           $sLecturerCode = substr($sFile, 0, -4);
-          $this->readLecturerSchedule($oMysqli, $sFullPath, $sLecturerCode);
+          $this->readLecturerSchedule($oMysqli, $sFullPath, $sLecturerCode, false);
+        } else {
+          die("File " . $sFullPath . " doesn't seem to be a file. Nice!");
+        }
+      }
+    } else {
+      die("Can't run the given scripts, no valid period / subdirectory");
+    }
+    
+    //Read beta schedules
+    if ($hDir = opendir(dirname(__FILE__) . "/../../cache/lecturer_beta/")) {
+      while (false !== ($sFile = readdir($hDir))) {
+        if ($sFile == '.' || $sFile == '..') { 
+          continue; 
+        }
+        $sFullPath = dirname(__FILE__) . "/../../cache/lecturer_beta/" . $sFile;
+        if (is_file($sFullPath) && strpos($sFile, ".ics") !== FALSE) {
+          $sLecturerCode = substr($sFile, 0, -4);
+          $this->readLecturerSchedule($oMysqli, $sFullPath, $sLecturerCode, true);
         } else {
           die("File " . $sFullPath . " doesn't seem to be a file. Nice!");
         }
@@ -19,7 +38,7 @@ class S3ReadLecturerSchedules implements iSubscript {
     }
   }	
   
-  private function readLecturerSchedule($oMysqli, $sFullPath, $sLecturerId) {
+  private function readLecturerSchedule($oMysqli, $sFullPath, $sLecturerId, $bIsBeta) {
     echo "Reading lecturer schedule from " . $sLecturerId . " ";
     //Retrieve data
     $oiCal = getiCalEvents($sFullPath);
@@ -63,21 +82,21 @@ class S3ReadLecturerSchedules implements iSubscript {
         sort($aLecturers);
       
         //Add entry
-        $this->createEntry($oMysqli, $sDate, $sStartTime, $sEndTime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation);
+        $this->createEntry($oMysqli, $sDate, $sStartTime, $sEndTime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation, $bIsBeta);
         echo ".";
       }
     }
     echo "OK!\n";
   }
   
-  private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation) {
+  private function createEntry($oMysqli, $sDate, $sStarttime, $sEndtime, $aRooms, $aClasses, $aLecturers, $sActivityId, $sActivityTypeId, $sDescription, $sSummary, $sLocation, $bBeta) {
     if (sizeof($aRooms) != 0) {
       $sRooms = implode(",", $aRooms);
     } else {
       $sRooms = "NULL";
     }
     //Create lesson
-    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location, rooms) VALUES (" . 
+    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location, rooms, beta) VALUES (" . 
     "\"" . $sDate . "\", " .
     "\"" . $sStarttime . "\", " .
     "\"" . $sEndtime . "\", " .
@@ -86,7 +105,8 @@ class S3ReadLecturerSchedules implements iSubscript {
     "\"" . $sDescription . "\", " .
     "\"" . $sSummary . "\", " .
     "\"" . $sLocation . "\", " .
-    "\"" . $sRooms . "\"" .
+    "\"" . $sRooms . "\", " .
+    "\"" . $bBeta . "\"" . 
     ");";
     
     if ($oMysqli->query($sQuery)) {
