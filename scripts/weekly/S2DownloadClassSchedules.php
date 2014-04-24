@@ -36,10 +36,15 @@ class S2DownloadClassSchedules implements iSubscript {
   }
   
   public function downloadClassSchedule($sCourseCode) {
-    echo ".";
     $sFile = dirname(__FILE__) . "/../../cache/class/" . $sCourseCode . ".ics";
-    file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
+    if (file_exists($sFile)) {
+      if (filemtime($sFile)  >= time() - 43200) {
+        echo "_";
+      } else {
+        file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
+        echo ".";
+      }
+    }
   }
-  
 }
 ?>

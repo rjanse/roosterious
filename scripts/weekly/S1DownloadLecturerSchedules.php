@@ -23,9 +23,16 @@ class S1DownloadLecturerSchedules implements iSubscript {
   }
   
   public function downloadLecturerSchedule($sLecturerId) {
-    echo ".";
     $sFile = dirname(__FILE__) . "/../../cache/lecturer/" . $sLecturerId . ".ics";
-    file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
+    if (file_exists($sFile)) {
+      if (filemtime($sFile)  >= time() - 43200) {
+        echo "_";
+      } else {
+        file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
+        echo ".";
+      }
+    }
+
   }
   
 }
