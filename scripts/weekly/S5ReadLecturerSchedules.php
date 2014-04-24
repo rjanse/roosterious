@@ -109,7 +109,7 @@ class S5ReadLecturerSchedules implements iSubscript {
     "\"" . $sSummary . "\", " .
     "\"" . $sLocation . "\", " .
     "\"" . $sRooms . "\", " .
-    "\"" . $bBeta . "\"" . 
+    "\"" . ($bBeta == true ? 1 : 0) . "\"" . 
     ");";
     
     if ($oMysqli->query($sQuery)) {

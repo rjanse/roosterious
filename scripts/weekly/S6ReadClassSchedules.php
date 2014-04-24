@@ -31,7 +31,7 @@ class S6ReadClassSchedules implements iSubscript {
         $sFullPath = dirname(__FILE__) . "/../../cache/class_beta/" . $sFile;
         if (is_file($sFullPath) && strpos($sFile, ".ics") !== FALSE) {
           $sClassCode = substr($sFile, 0, -4);
-          $this->readClassSchedule($oMysqli, $sFullPath, $sClassCode, false);
+          $this->readClassSchedule($oMysqli, $sFullPath, $sClassCode, true);
         } else {
           die("File " . $sFullPath . " doesn't seem to be a file. Nice!");
         }
@@ -121,7 +121,7 @@ class S6ReadClassSchedules implements iSubscript {
     "\"" . $sSummary . "\", " .
     "\"" . $sLocation . "\", " .
     "\"" . $sRooms . "\", " .
-    "\"" . $bBeta . "\"" . 
+    "\"" . ($bBeta == true ? 1 : 0) . "\"" . 
     ");";
     
     if ($oMysqli->query($sQuery)) {
