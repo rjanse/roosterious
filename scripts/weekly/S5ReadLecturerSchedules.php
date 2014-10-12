@@ -68,10 +68,24 @@ class S5ReadLecturerSchedules implements iSubscript {
         $sActivityId = $sSummary;
       
         //Extract classes and activitytype from description
-        $sClasses = trim(substr($sDescription, 5, strpos($sDescription, "(") - 6));
-        preg_match_all("/[A-Za-z0-9]+/", $sClasses, $aClasses);
-        $aClasses = array_unique($aClasses[0]);
-        $sActivityTypeId = trim(substr($sDescription, strpos($sDescription, ")") + 1));
+        $aDescriptionParts = preg_split("/[,]+/", $sDescription);
+        $iDescriptionPartsLength = count($aDescriptionParts);
+        $aClasses = array();
+        for($i = 0; $i < ($iDescriptionPartsLength-1); $i++) {
+          $sClass = trim($aDescriptionParts[$i]);
+          $sClass = str_replace("\\", "", $sClass);
+          $sClass = str_replace("Klas ", "", $sClass);
+          if (strlen($sClass)!=0) {
+            array_push($aClasses, $sClass); 
+          }
+        }
+        $sActivityTypeId = trim($aDescriptionParts[$iDescriptionPartsLength - 1]);
+        $aClasses = array_unique($aClasses);
+        
+        //$sClasses = trim(substr($sDescription, 5, strpos($sDescription, "(") - 6));
+        //preg_match_all("/[A-Za-z0-9]+/", $sClasses, $aClasses);
+        //$aClasses = array_unique($aClasses[0]);
+        //$sActivityTypeId = trim(substr($sDescription, strpos($sDescription, ")") + 1));
       
         //Extract class id from location
         $aLocationParts = preg_split("/[,]+/", $sLocation);
