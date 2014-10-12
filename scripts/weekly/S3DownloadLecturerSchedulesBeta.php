@@ -23,10 +23,20 @@ class S3DownloadLecturerSchedulesBeta implements iSubscript {
   }
   
   public function downloadLecturerSchedule($sLecturerId) {
-    echo ".";
     $sFile = dirname(__FILE__) . "/../../cache/lecturer_beta/" . $sLecturerId . ".ics";
-    //http://croosters.saxion.nl/ical/teacher/RGR05.ics
-    file_put_contents($sFile, fopen("http://croosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
+    if (file_exists($sFile)) {
+      if (filemtime($sFile)  >= time() - 43200) {
+        echo "_";
+      } else {
+        //http://croosters.saxion.nl/ical/teacher/RGR05.ics
+        file_put_contents($sFile, fopen("http://croosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
+        echo "U";
+      }
+    } else {
+      //http://croosters.saxion.nl/ical/teacher/RGR05.ics
+      file_put_contents($sFile, fopen("http://croosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
+      echo "N";
+    }
   }
   
 }
