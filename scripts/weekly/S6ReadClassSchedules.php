@@ -69,27 +69,31 @@ class S6ReadClassSchedules implements iSubscript {
         $aRooms = array_unique(preg_split("/[\s\|]+/", trim($aLocationParts[1])));
       
         //Create lecturers array
-        //Example format: "Docent G.M.T. Deterd Oude Weme|E.H. Ruiterkamp|M.H.T. Jansen|J.E. Nawijn (APO) SLB"
-        //Example format: "Docent <doc>|<doc> (<ACADEMIE>) <SUBJECT>
+        //Example format: "DESCRIPTION:Docent R. Greven\, J.W.M. Stroet\, Kick-off kwartiel 1.1"
+        //Example format: "Docent <doc>|,<doc> !, <SUBJECT>
+        //Exampe format (bug): DESCRIPTION:Docent N.G.J. Vloon\, how to be succesful\, not for german-dutch Students
+        $aDescriptionParts = preg_split("/[,|]+/", $sDescription);
+        $iDescriptionPartsLength = count($aDescriptionParts);
         $aLecturers = array();
-        $sLecturers = trim(substr($sDescription, 6, strpos($sDescription, "(") - 6));
-        $aLecturerFullName = explode("|", $sLecturers);
-        $aLecturerFullName = array_unique($aLecturerFullName);
-        foreach ($aLecturerFullName as $sLecturerFullName) {
-          if ($sLecturerFullName!="") {
-            $sQuery = "SELECT id, name FROM lecturer WHERE name=\"" . $sLecturerFullName . "\";";
+        for($i = 0; $i < ($iDescriptionPartsLength-1); $i++) {
+          $sLecturer = trim($aDescriptionParts[$i]);
+          $sLecturer = str_replace("\\", "", $sLecturer);
+          $sLecturer = str_replace("Docent ", "", $sLecturer);
+          if (strlen($sLecturer)!=0) {
+            $sQuery = "SELECT id, name FROM lecturer WHERE name=\"" . $sLecturer . "\";";
             $oResult = $oMysqli->query($sQuery);
             $oObj = $oResult->fetch_object();
             if ($oObj!=null) {
               array_push($aLecturers, $oObj->id);
             } else {
               array_push($aLecturers, "NULL");
-              echo "No lecturer found for " . $sLecturerFullName . "\n";
+              echo "No lecturer found for " . $sLecturer . "\n";
             }
+
           }
         }
-        
-        $sActivityTypeId = trim(substr($sDescription, strpos($sDescription, ")") + 1));
+        $sActivityTypeId = trim($aDescriptionParts[$iDescriptionPartsLength - 1]);
+        $aLecturers = array_unique($aLecturers);
         
         sort($aRooms);
         sort($aClasses);
