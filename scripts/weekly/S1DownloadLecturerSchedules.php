@@ -30,10 +30,13 @@ class S1DownloadLecturerSchedules implements iSubscript {
       } else {
         //http://roosters.saxion.nl/ical/teacher/RGR05.ics
         file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
-        echo ".";
+        echo "U";
       }
+    } else {
+      //http://roosters.saxion.nl/ical/teacher/RGR05.ics
+      file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/teacher/" . $sLecturerId . ".ics", 'r'));
+      echo "N";
     }
-
   }
   
 }

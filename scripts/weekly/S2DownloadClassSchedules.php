@@ -43,8 +43,12 @@ class S2DownloadClassSchedules implements iSubscript {
       } else {
         //http://roosters.saxion.nl/ical/group/EIN1Va.ics
         file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
-        echo ".";
+        echo "U";
       }
+    } else {
+      //http://roosters.saxion.nl/ical/group/EIN1Va.ics
+      file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
+      echo "N";
     }
   }
 }
