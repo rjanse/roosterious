@@ -79,7 +79,6 @@ class S5ReadLecturerSchedules implements iSubscript {
             array_push($aClasses, $sClass); 
           }
         }
-        print_r($aClasses);
         $sActivityTypeId = trim($aDescriptionParts[$iDescriptionPartsLength - 1]);
         $aClasses = array_unique($aClasses);
         
