@@ -38,7 +38,8 @@ class S4DownloadClassSchedulesBeta implements iSubscript {
   public function downloadClassSchedule($sCourseCode) {
     echo ".";
     $sFile = dirname(__FILE__) . "/../../cache/class_beta/" . $sCourseCode . ".ics";
-    file_put_contents($sFile, fopen("http://beta.rooster.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
+    //http://croosters.saxion.nl/ical/group/EIN1Va.ics
+    file_put_contents($sFile, fopen("http://croosters.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
   }
   
 }

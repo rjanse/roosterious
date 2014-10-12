@@ -41,6 +41,7 @@ class S2DownloadClassSchedules implements iSubscript {
       if (filemtime($sFile)  >= time() - 43200) {
         echo "_";
       } else {
+        //http://roosters.saxion.nl/ical/group/EIN1Va.ics
         file_put_contents($sFile, fopen("http://roosters.saxion.nl/ical/group/" . $sCourseCode . ".ics", 'r'));
         echo ".";
       }
