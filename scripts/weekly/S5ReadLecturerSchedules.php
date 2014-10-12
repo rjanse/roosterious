@@ -68,7 +68,7 @@ class S5ReadLecturerSchedules implements iSubscript {
         $sActivityId = $sSummary;
       
         //Extract classes and activitytype from description
-        $aDescriptionParts = preg_split("/[,]+/", $sDescription);
+        $aDescriptionParts = preg_split("/[,|]+/", $sDescription);
         $iDescriptionPartsLength = count($aDescriptionParts);
         $aClasses = array();
         for($i = 0; $i < ($iDescriptionPartsLength-1); $i++) {
@@ -79,6 +79,7 @@ class S5ReadLecturerSchedules implements iSubscript {
             array_push($aClasses, $sClass); 
           }
         }
+        print_r($aClasses);
         $sActivityTypeId = trim($aDescriptionParts[$iDescriptionPartsLength - 1]);
         $aClasses = array_unique($aClasses);
         
