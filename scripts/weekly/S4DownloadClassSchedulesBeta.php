@@ -1,7 +1,7 @@
 <?php
 class S4DownloadClassSchedulesBeta implements iSubscript {
   public function execute($oMysqli) {
-    $sAcademysHtml = getHtmlString("http://beta.rooster.saxion.nl/groups");
+    $sAcademysHtml = getHtmlString("http://croosters.saxion.nl/groups");
     preg_match_all ("/\/groups\/academy:[A-Za-z0-9]*\"/", $sAcademysHtml, $aMatches, PREG_PATTERN_ORDER);
     foreach ($aMatches[0] as $sMatch) {
       $sAcademy = substr($sMatch, 16, -1);
@@ -10,8 +10,8 @@ class S4DownloadClassSchedulesBeta implements iSubscript {
   }
   
   public function downloadSchedulesForAcademy($sAcademy) {
-    echo "Downloading class schedule for academy " . $sAcademy . "\n";
-    $sAcademyCoursesHtml = getHtmlString("http://beta.rooster.saxion.nl/groups/academy:" . $sAcademy);
+    echo "Downloading beta class schedule for academy " . $sAcademy . "\n";
+    $sAcademyCoursesHtml = getHtmlString("http://croosters.saxion.nl/groups/academy:" . $sAcademy);
     
     preg_match_all ("/\/groups\/course:[^\"]*\"/", $sAcademyCoursesHtml, $aMatches, PREG_PATTERN_ORDER);
     
@@ -22,8 +22,8 @@ class S4DownloadClassSchedulesBeta implements iSubscript {
   }
   
   public function downloadSchedulesForCourse($sCourse) {
-    echo "  Downloading class schedule for course " . $sCourse;
-    $sCourseClassesHtml = getHtmlString("http://beta.rooster.saxion.nl/groups/course:" . $sCourse);
+    echo "  Downloading beta class schedule for course " . $sCourse;
+    $sCourseClassesHtml = getHtmlString("http://croosters.saxion.nl/groups/course:" . $sCourse);
     
     preg_match_all ("/\/schedule\/group:[^\/]*\/week:0/", $sCourseClassesHtml, $aMatches, PREG_PATTERN_ORDER);
     $i = 0;

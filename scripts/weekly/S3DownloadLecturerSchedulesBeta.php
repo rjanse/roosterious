@@ -1,7 +1,7 @@
 <?php
 class S3DownloadLecturerSchedulesBeta implements iSubscript {
   public function execute($oMysqli) {
-    $sAcademysHtml = getHtmlString("http://beta.rooster.saxion.nl/teachers");
+    $sAcademysHtml = getHtmlString("http://croosters.saxion.nl/teachers");
     preg_match_all ("/\/teachers\/academy:[A-Za-z0-9]{0,5}/", $sAcademysHtml, $aMatches, PREG_PATTERN_ORDER);
     foreach ($aMatches[0] as $sMatch) {
       $sAcademy = substr($sMatch, 18);
@@ -10,8 +10,8 @@ class S3DownloadLecturerSchedulesBeta implements iSubscript {
   }
   
   public function downloadSchedulesForAcademy($sAcademy) {
-    echo "Downloading lecturer schedule for academy " . $sAcademy;
-    $sAcademyLecturersHtml = getHtmlString("http://beta.rooster.saxion.nl/teachers/academy:" . $sAcademy);
+    echo "Downloading beta lecturer schedule for academy " . $sAcademy;
+    $sAcademyLecturersHtml = getHtmlString("http://croosters.saxion.nl/teachers/academy:" . $sAcademy);
     
     preg_match_all ("/\/schedule\/teacher:[A-Za-z0-9]{0,5}\/week:0/", $sAcademyLecturersHtml, $aMatches, PREG_PATTERN_ORDER);
     
