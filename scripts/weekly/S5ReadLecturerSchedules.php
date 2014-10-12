@@ -1,9 +1,6 @@
 <?php
 class S5ReadLecturerSchedules implements iSubscript {
   public function execute($oMysqli) {
-    //Remove all entries after the monday of this week
-    $oMysqli->query("DELETE FROM lesson WHERE date >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) - 2 DAY;");
-  
     //Read normal schedules
     if ($hDir = opendir(dirname(__FILE__) . "/../../cache/lecturer/")) {
       while (false !== ($sFile = readdir($hDir))) {
