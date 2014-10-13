@@ -48,6 +48,27 @@
 	echo "OK!\n";
 	
 	echo "Creating lesson table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), rooms VARCHAR(512), beta BOOL, PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, rooms));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), rooms VARCHAR(512), beta BOOL, PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, rooms, activity_id, activitytype_id));");
+	echo "OK!\n";
+	
+	
+	
+	// SEARCH TABLES
+	
+	echo "Creating lecturer search table...";
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_lecturer (searchwords VARCHAR(128), lecturer_id VARCHAR(5), activities VARCHAR(512));");
+	echo "OK!\n";
+	
+  echo "Creating class search table...";
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_class (searchwords VARCHAR(128), class_id VARCHAR(5), activities VARCHAR(512));");
+	echo "OK!\n";
+	
+  echo "Creating room search table...";
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_room (searchwords VARCHAR(128), room_id VARCHAR(5), activities VARCHAR(512));");
+	echo "OK!\n";
+	
+	// STATS TABLES
+  echo "Creating updates stats table...";
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS stats_updates (date DATE, starttime TIME, endtime TIME, number_of_lecturers INT, number_of_classes INT, number_of_rooms INT, number_of_activities INT, number_of_lessons INT, PRIMARY KEY(date));");
 	echo "OK!\n";
 ?>

@@ -121,6 +121,33 @@ Flight::route('GET /schedule/now.@sFormat', function($sFormat){
     }	
 });
 
+/**
+ * Get's the dashboard stats
+ */
+Flight::route('GET /stats/dashboard.json', function() {
+	$oMysqli = getMysqli();
+	
+	$sQuery = "SELECT * FROM stats_updates WHERE date = (SELECT max(date) FROM stats_updates);";
+    if ($oResult = $oMysqli->query($sQuery)) {
+      echo formatLessonResult("json", $oResult); 
+    } else {
+      echo errorInFormat("json");
+    }	
+});
+
+/**
+ * Get's the update stats
+ */
+Flight::route('GET /stats/updates.json', function() {
+	$oMysqli = getMysqli();
+	
+	$sQuery = "SELECT * FROM stats_updates WHERE date > DATE_SUB(CURDATE(), INTERVAL 1 YEAR);";
+    if ($oResult = $oMysqli->query($sQuery)) {
+      echo formatLessonResult("json", $oResult); 
+    } else {
+      echo errorInFormat("json");
+    }	
+}); 
 
 /**
  * Get's the stats for lecturer
