@@ -9,7 +9,7 @@ class S7FillSearchTables implements iSubscript {
     
     
     //Fill lecturer_search table
-    $oMysqli->query("INSERT INTO search_lecturer(searchwords, lecturer_id, activities) SELECT CONCAT(lecturer.id, \" \", lecturer.name), lecturer.id, GROUP_CONCAT(DISTINCT lesson.activity_id) FROM lecturer, lesson, lessonlecturers WHERE lecturer.id = lessonlecturers.lecturer_id AND lesson.id = lessonlecturers.lesson_id GROUP BY lecturer_id;");
+    $oMysqli->query("INSERT INTO search_lecturer(searchwords, lecturer_id, lecturer_name, activities) SELECT CONCAT(lecturer.id, \" \", lecturer.name), lecturer.id, lecturer.name, GROUP_CONCAT(DISTINCT lesson.activity_id) FROM lecturer, lesson, lessonlecturers WHERE lecturer.id = lessonlecturers.lecturer_id AND lesson.id = lessonlecturers.lesson_id GROUP BY lecturer_id;");
     
     //Fill class search table
     $oMysqli->query("INSERT INTO search_class(searchwords, class_id, activities) SELECT class.id, class.id, GROUP_CONCAT(DISTINCT lesson.activity_id) FROM class, lesson, lessonclasses WHERE class.id = lessonclasses.class_id AND lesson.id = lessonclasses.lesson_id GROUP BY class_id");

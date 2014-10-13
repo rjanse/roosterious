@@ -56,7 +56,7 @@
 	// SEARCH TABLES
 	
 	echo "Creating lecturer search table...";
-  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_lecturer (searchwords VARCHAR(128), lecturer_id VARCHAR(5), activities VARCHAR(512));");
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_lecturer (searchwords VARCHAR(128), lecturer_id VARCHAR(5), lecturer_name VARCHAR(64), activities VARCHAR(512));");
 	echo "OK!\n";
 	
   echo "Creating class search table...";

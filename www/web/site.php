@@ -242,6 +242,7 @@
     		</div>
     </div>
   </div>
+  
   <script>
   	var sTitle = "<?php echo $sTitle ?>";
   	var sApiurl = "api/<?php echo $sApiUrl ?>.json";

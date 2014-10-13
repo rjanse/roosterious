@@ -122,6 +122,29 @@ Flight::route('GET /schedule/now.@sFormat', function($sFormat){
 });
 
 /**
+ * Get's a lecturer, based on search query
+ */
+Flight::route('GET /lecturer.json', function(){
+	$oMysqli = getMysqli();
+	
+  $sSearchword = Flight::request()->query->q;
+	$iPageLimit = Flight::request()->query->page_limit;
+	if (!is_numeric($iPageLimit)) {
+  	$iPageLimit = 10;
+	}
+ 	
+  $sQuery = "SELECT lecturer_id, lecturer_name, activities FROM search_lecturer WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+	
+  if ($oResult = $oMysqli->query($sQuery)) {
+    echo formatLessonResult("json", $oResult); 
+  } else {
+    echo errorInFormat("json");
+  }	
+});
+
+
+
+/**
  * Get's the dashboard stats
  */
 Flight::route('GET /stats/dashboard.json', function() {
@@ -141,7 +164,7 @@ Flight::route('GET /stats/dashboard.json', function() {
 Flight::route('GET /stats/updates.json', function() {
 	$oMysqli = getMysqli();
 	
-	$sQuery = "SELECT * FROM stats_updates WHERE date > DATE_SUB(CURDATE(), INTERVAL 1 YEAR);";
+	$sQuery = "SELECT * FROM stats_updates WHERE date > DATE_SUB(CURDATE(), INTERVAL 1 YEAR) ORDER BY date DESC;";
     if ($oResult = $oMysqli->query($sQuery)) {
       echo formatLessonResult("json", $oResult); 
     } else {
