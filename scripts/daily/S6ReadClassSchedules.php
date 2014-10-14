@@ -129,9 +129,12 @@ class S6ReadClassSchedules implements iSubscript {
       $iLessonId = $oMysqli->insert_id;
     } else {
       $sQuery = "SELECT id FROM lesson WHERE date=\"" . $sDate . "\" AND starttime=\"" . $sStarttime . "\" AND endtime=\"" . $sEndtime . "\" AND activity_id = \"" . $sActivityId . "\" AND activitytype_id = \"" . $sActivityTypeId . "\" AND rooms = \"" . $sRooms . "\";";
-      $oResult = $oMysqli->query($sQuery);
-      $oObj = $oResult->fetch_object();
-      $iLessonId = $oObj->id;
+      if ($oResult = $oMysqli->query($sQuery)) {
+        $oObj = $oResult->fetch_object();
+        $iLessonId = $oObj->id; 
+      } else {
+        $iLessonId = -1;
+      }
     }
     
     //Add activities and activity types
