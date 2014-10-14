@@ -17,6 +17,9 @@ class S7FillSearchTables implements iSubscript {
     //Fill room search table
     $oMysqli->query("INSERT INTO search_room(searchwords, room_id, activities) SELECT room.id, room.id, GROUP_CONCAT(DISTINCT lesson.activity_id) FROM room, lesson, lessonrooms WHERE room.id = lessonrooms.room_id AND lesson.id = lessonrooms.lesson_id GROUP BY room_id;");
     
+    //Fill activity search table
+    $oMysqli->query("INSERT INTO search_activity(searchwords, activity_id) SELECT activity.id, activity.id FROM activity;");
+    
   }  
 }
 ?>

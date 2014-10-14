@@ -60,11 +60,15 @@
 	echo "OK!\n";
 	
   echo "Creating class search table...";
-  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_class (searchwords VARCHAR(128), class_id VARCHAR(5), activities VARCHAR(512));");
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_class (searchwords VARCHAR(128), class_id VARCHAR(16), activities VARCHAR(512));");
 	echo "OK!\n";
 	
   echo "Creating room search table...";
-  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_room (searchwords VARCHAR(128), room_id VARCHAR(5), activities VARCHAR(512));");
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_room (searchwords VARCHAR(128), room_id VARCHAR(16), activities VARCHAR(512));");
+	echo "OK!\n";
+	
+  echo "Creating activity search table...";
+  $oMysqli->query("CREATE TABLE IF NOT EXISTS search_activity (searchwords VARCHAR(128), activity_id VARCHAR(128));");
 	echo "OK!\n";
 	
 	// STATS TABLES

@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-primary">
+        <div class="panel panel-red">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3"></div>
@@ -46,7 +46,7 @@
     </div>
 
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-yellow">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3"></div>
@@ -66,7 +66,7 @@
     </div>
 
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-red">
+        <div class="panel panel-yellow">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3"></div>
@@ -83,6 +83,14 @@
                 </div>
             </div><a href="#"></a>
         </div>
+    </div>
+</div>
+
+<div class="row" id="update_warning" style="display: none;">
+    <div class="col-lg-12">
+      <div class="alert alert-danger">
+        <strong>Let op: </strong>Op dit moment is Roosterious zijn informatie aan het updaten. Hierdoor kan de informatie onvolledig zijn!
+      </div>    
     </div>
 </div>
 
@@ -159,6 +167,13 @@ $(function() {
       { "data": "endtime" },
       { "data": "number_of_lessons" }
     ]
-  });     
+  });
+  
+  //Check if system is updating
+  $.getJSON( "api/stats/is_updating.json" , function( data ) {
+    if (data.response == "true") {
+      $("#update_warning").show();
+    }
+  });    
 });
 </script>

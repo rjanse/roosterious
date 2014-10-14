@@ -133,7 +133,11 @@ Flight::route('GET /lecturer.json', function(){
   	$iPageLimit = 10;
 	}
  	
-  $sQuery = "SELECT lecturer_id, lecturer_name, activities FROM search_lecturer WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+ 	if ($sSearchword != "") {
+   	$sQuery = "SELECT lecturer_id, lecturer_name, activities FROM search_lecturer WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+ 	} else {
+   	$sQuery = "SELECT lecturer_id, lecturer_name, activities FROM search_lecturer;";
+ 	}
 	
   if ($oResult = $oMysqli->query($sQuery)) {
     echo formatLessonResult("json", $oResult); 
@@ -142,7 +146,80 @@ Flight::route('GET /lecturer.json', function(){
   }	
 });
 
+/**
+ * Get's a class, based on search query
+ */
+Flight::route('GET /class.json', function(){
+	$oMysqli = getMysqli();
+	
+  $sSearchword = Flight::request()->query->q;
+	$iPageLimit = Flight::request()->query->page_limit;
+	if (!is_numeric($iPageLimit)) {
+  	$iPageLimit = 10;
+	}
+ 	
+  if ($sSearchword != "") {
+   	$sQuery = "SELECT class_id, activities FROM search_class WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+ 	} else {
+   	$sQuery = "SELECT class_id, activities FROM search_class;";
+ 	}
+ 	
+  if ($oResult = $oMysqli->query($sQuery)) {
+    echo formatLessonResult("json", $oResult); 
+  } else {
+    echo errorInFormat("json");
+  }	
+});
 
+/**
+ * Get's a room, based on search query
+ */
+Flight::route('GET /room.json', function(){
+	$oMysqli = getMysqli();
+	
+  $sSearchword = Flight::request()->query->q;
+	$iPageLimit = Flight::request()->query->page_limit;
+	if (!is_numeric($iPageLimit)) {
+  	$iPageLimit = 10;
+	}
+ 	
+  if ($sSearchword != "") {
+   	$sQuery = "SELECT room_id, activities FROM search_room WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+ 	} else {
+   	$sQuery = "SELECT room_id, activities FROM search_room;";
+ 	}
+ 	
+  if ($oResult = $oMysqli->query($sQuery)) {
+    echo formatLessonResult("json", $oResult); 
+  } else {
+    echo errorInFormat("json");
+  }	
+});
+
+/**
+ * Get's a activity, based on search query
+ */
+Flight::route('GET /activity.json', function(){
+	$oMysqli = getMysqli();
+	
+  $sSearchword = Flight::request()->query->q;
+	$iPageLimit = Flight::request()->query->page_limit;
+	if (!is_numeric($iPageLimit)) {
+  	$iPageLimit = 10;
+	}
+ 	
+  if ($sSearchword != "") {
+   	$sQuery = "SELECT activity_id FROM search_activity WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+ 	} else {
+   	$sQuery = "SELECT activity_id FROM search_activity;";
+ 	}
+ 	
+  if ($oResult = $oMysqli->query($sQuery)) {
+    echo formatLessonResult("json", $oResult); 
+  } else {
+    echo errorInFormat("json");
+  }	
+});
 
 /**
  * Get's the dashboard stats
@@ -159,7 +236,7 @@ Flight::route('GET /stats/dashboard.json', function() {
 });
 
 /**
- * Get's the update stats
+ * Get's a list of updates
  */
 Flight::route('GET /stats/updates.json', function() {
 	$oMysqli = getMysqli();
@@ -167,6 +244,24 @@ Flight::route('GET /stats/updates.json', function() {
 	$sQuery = "SELECT * FROM stats_updates WHERE date > DATE_SUB(CURDATE(), INTERVAL 1 YEAR) ORDER BY date DESC;";
     if ($oResult = $oMysqli->query($sQuery)) {
       echo formatLessonResult("json", $oResult); 
+    } else {
+      echo errorInFormat("json");
+    }	
+}); 
+
+/**
+ * Get's the update stats
+ */
+Flight::route('GET /stats/is_updating.json', function() {
+	$oMysqli = getMysqli();
+	
+	$sQuery = "SELECT * FROM stats_updates WHERE date = (SELECT max(date) FROM stats_updates) AND endtime IS NULL;";
+    if ($oResult = $oMysqli->query($sQuery)) {
+      if (mysqli_num_rows($oResult) != 0) {
+        echo "{\"status\": \"ok\", \"response\": \"true\"}";
+      } else {
+        echo "{\"status\": \"ok\", \"response\": \"false\"}";
+      }
     } else {
       echo errorInFormat("json");
     }	
