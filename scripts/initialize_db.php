@@ -3,6 +3,29 @@
   
   $oMysqli = getMysqli();
 
+  //Create static tables
+  echo "Creating lecturetimes table";
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lecturetimes (lecturehour INT, starttime TIME, endtime TIME, PRIMARY KEY (lecturehour));");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(1, '8:30', '9:15');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(2, '9:15', '10:00');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(3, '10:15', '11:00');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(4, '11:00', '11:45');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(5, '11:45', '12:30');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(6, '12:30', '13:15');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(7, '13:15', '14:00');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(8, '14:00', '14:45');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(9, '15:00', '15:45');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(10, '15:45', '16:30');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(11, '16:30', '17:15');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(12, '17:15', '18:00');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(13, '18:15', '19:00');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(14, '19:00', '19:45');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(15, '20:00', '20:45');");
+	$oMysqli->query("INSERT INTO lecturetimes(lecturehour, starttime, endtime) VALUES(16, '20:45', '21:30');");
+	echo "OK!\n";
+
+
+  //Create dynamic tables
   echo "Creating building table...";
 	$oMysqli->query("CREATE TABLE IF NOT EXISTS building (id INT, name varchar(32), PRIMARY KEY (id));");
 	echo "OK!\n";

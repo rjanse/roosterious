@@ -10,8 +10,12 @@
   echo "Delete tables ";
   if ($oResult = $oMysqli->query($sQuery)) {
     while($aObject = $oResult->fetch_assoc()) {
-      $oMysqli->query($aObject['query']);
-      echo ".";
+      if (strpos($aObject['query'], "stats_updates")!== false) {
+        echo "K";
+      } else {
+        $oMysqli->query($aObject['query']);
+        echo ".";
+      }
     }
   }
   echo "OK!\n";
