@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/../../inc/lib/flight/flight/Flight.php");
  * Returns a generic query to get lesson rows
  */
 function generateLessonQuery($sFrom) {
-	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, activity_id AS activity, activitytype_id AS activitytype, 
+	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, (SELECT lecturehour FROM lecturetimes WHERE lecturetimes.starttime = lesson.starttime) AS starttimehour, (SELECT lecturehour FROM lecturetimes WHERE lecturetimes.endtime = lesson.endtime) AS endtimehour, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, activity_id AS activity, activitytype_id AS activitytype, 
   (SELECT GROUP_CONCAT(lecturer_id) FROM lessonlecturers WHERE lesson_id=id) AS lecturers, 
   (SELECT GROUP_CONCAT(class_id) FROM lessonclasses WHERE lesson_id=id) AS classes,
   (SELECT GROUP_CONCAT(room_id) FROM lessonrooms WHERE lesson_id=id) AS rooms
@@ -56,7 +56,7 @@ function errorInFormat($sFormat) {
 Flight::route('GET /schedule/lecturer/@sLecturerId\.@sFormat', function($sLecturerId, $sFormat){
     $oMysqli = getMysqli();
     $sQuery = generateLessonQuery("FROM lesson,lessonlecturers WHERE lesson.id = lessonlecturers.lesson_id AND lecturer_id = \"" . $sLecturerId . "\" AND date >= " . getFromDateString() . " ORDER BY date, starttime;");
-    
+
     if ($oResult = $oMysqli->query($sQuery)) {
       echo formatLessonResult($sFormat, $oResult); 
     } else {
