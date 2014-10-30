@@ -29,6 +29,8 @@
     <!-- Select2 CSS -->
     <link href="css/plugins/select2/select2.css" rel="stylesheet">
     <link href="css/plugins/select2/select2-bootstrap.css" rel="stylesheet">
+	
+	<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -55,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Roosterious v0.3</a>
+                <a class="navbar-brand" href="index.html">Roosterious v0.4alpha</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -65,6 +67,14 @@
                         <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-alerts">
+	                    <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> Datum en tijd view toegevoegd. Layout nog niet optimaal, maar werkt wel
+                                    <span class="pull-right text-muted small">30 Oktober 2014, 22:17</span>
+                                </div>
+                            </a>
+                        </li>
                         <li>
                             <a href="#">
                                 <div>
@@ -122,6 +132,9 @@
                         <li>
                             <a href="#" class="menu" id="menu_activity"><i class="fa fa-graduation-cap fa-fw"></i> Activiteit</a>
                         </li>
+                        <li>
+                            <a href="#" class="menu" id="menu_datetime"><i class="fa fa-clock-o fa-fw"></i> Datum en tijd</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -153,6 +166,8 @@
     <!-- Select2 Javascript -->
     <script src="js/plugins/select2/select2.min.js"></script>
     <script src="js/plugins/select2/select2_locale_nl.js"></script>
+    
+    <script src="js/plugins/bootstrap-datetimepicker.min.js"></script>
           
     <!-- Morris Charts JavaScript -->
     <!--

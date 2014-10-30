@@ -35,6 +35,12 @@ $(function() {
       $("#menu_activity").addClass("active");
     });
     
+    $("#menu_datetime").click(function() {
+      $("#page-wrapper").load("pages/schedule.php?type=datetime");
+      $(".menu").removeClass("active");
+      $("#menu_datetime").addClass("active");
+    });
+    
     $("#page-wrapper").load("pages/dashboard.phtml");
 });
 
@@ -73,6 +79,8 @@ function loadSchedule( type, id ) {
     $("#schedulearea > div:first > span").html("Lesrooster van lokaal <strong>" + id + "</strong>");
   } else if (type == "activity") {
     $("#schedulearea > div:first > span").html("Lesrooster voor activiteit <strong>" + id + "</strong>");
+  } else if (type == "datetime") {
+    $("#schedulearea > div:first > span").html("Lesrooster voor dag en tijd <strong>" + id + "</strong>");
   }
       
   var sApiUrl = "api/schedule/" + type + "/" + id + ".json";
