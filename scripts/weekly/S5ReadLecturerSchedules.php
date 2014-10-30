@@ -1,6 +1,11 @@
 <?php
 class S5ReadLecturerSchedules implements iSubscript {
   public function execute($oMysqli) {
+	
+	//Log start proces of updating
+	$oMysqli->query("DELETE FROM stats_updates WHERE date = CURDATE();");
+    $oMysqli->query("INSERT INTO stats_updates (date, starttime) VALUES (CURDATE(), CURTIME());");
+    
     //Read normal schedules
     if ($hDir = opendir(dirname(__FILE__) . "/../../cache/lecturer/")) {
       while (false !== ($sFile = readdir($hDir))) {
@@ -110,10 +115,12 @@ class S5ReadLecturerSchedules implements iSubscript {
       $sRooms = "NULL";
     }
     //Create lesson
-    $sQuery = "INSERT INTO lesson(date, starttime, endtime, activity_id, activitytype_id, description, summary, location, rooms, beta) VALUES (" . 
+    $sQuery = "INSERT INTO lesson(date, starttime, endtime, startlecturehour, endlecturehour, activity_id, activitytype_id, description, summary, location, rooms, beta) VALUES (" . 
     "\"" . $sDate . "\", " .
     "\"" . $sStarttime . "\", " .
     "\"" . $sEndtime . "\", " .
+    "(SELECT lecturehour FROM lecturetimes WHERE lecturetimes.starttime = \"" . $sStarttime . "\"), " .
+    "(SELECT lecturehour FROM lecturetimes WHERE lecturetimes.endtime = \"" . $sEndtime . "\"), " .
     "\"" . $sActivityId . "\", " . 
     "\"" . $sActivityTypeId . "\", " . 
     "\"" . $sDescription . "\", " .

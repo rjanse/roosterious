@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/../../inc/lib/flight/flight/Flight.php");
  * Returns a generic query to get lesson rows
  */
 function generateLessonQuery($sFrom) {
-	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, (SELECT lecturehour FROM lecturetimes WHERE lecturetimes.starttime = lesson.starttime) AS starttimehour, (SELECT lecturehour FROM lecturetimes WHERE lecturetimes.endtime = lesson.endtime) AS endtimehour, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, activity_id AS activity, activitytype_id AS activitytype, 
+	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, startlecturehour, endlecturehour, activity_id AS activity, activitytype_id AS activitytype, 
   (SELECT GROUP_CONCAT(lecturer_id) FROM lessonlecturers WHERE lesson_id=id) AS lecturers, 
   (SELECT GROUP_CONCAT(class_id) FROM lessonclasses WHERE lesson_id=id) AS classes,
   (SELECT GROUP_CONCAT(room_id) FROM lessonrooms WHERE lesson_id=id) AS rooms
@@ -42,11 +42,15 @@ function formatLessonResult($sFormat, $oResult) {
   }
 }
 
-function errorInFormat($sFormat) {
+function errorInFormat($sFormat, $sMessage = "") {
   if ($sFormat == "ical") {
   
   } else if ($sFormat == "json") {
-    return "{\"status\": \"error\", \"message\": \"Error in database query\"}";
+	if ($sMessage == "") {
+		return "{\"status\": \"error\", \"message\": \"An unknown error occured. You should now panic\"}";
+	} else {
+		return "{\"status\": \"error\", \"message\": \"" . $sMessage . "\"}";
+	}
   }
 }
 
@@ -54,6 +58,10 @@ function errorInFormat($sFormat) {
  * Get's the schedule for a specified lecturer
  */
 Flight::route('GET /schedule/lecturer/@sLecturerId\.@sFormat', function($sLecturerId, $sFormat){
+	if (!preg_match('/^[A-Za-z0-9]{5}$/', $sLecturerId)) {
+		echo errorInFormat($sFormat, "Lecturer id should be in format XXXXX (five letters or numbers)");
+		return;
+	}
     $oMysqli = getMysqli();
     $sQuery = generateLessonQuery("FROM lesson,lessonlecturers WHERE lesson.id = lessonlecturers.lesson_id AND lecturer_id = \"" . $sLecturerId . "\" AND date >= " . getFromDateString() . " ORDER BY date, starttime;");
 
@@ -109,10 +117,34 @@ Flight::route('GET /schedule/activity/@sActivityId\.@sFormat', function($sActivi
 /**
  * Get's the schedule for now
  */
-Flight::route('GET /schedule/now.@sFormat', function($sFormat){
+Flight::route('GET /schedule/datetime/@sDate/@sLectureHour\.@sFormat', function($sDate, $sLectureHour, $sFormat){
+	if (!preg_match('/^[0-9]+\-[0-9]+\-[0-9]+$/', $sDate)) {
+		echo errorInFormat($sFormat, "Date should be in format YYYY-MM-DD");
+		return;
+	}
+	if (!preg_match('/^[0-9]+$/', $sLectureHour)) {
+		echo errorInFormat($sFormat, "Lecturehour should be in number format e.g: 1,2,3 ... 16");
+		return;
+	}
+	
 	$oMysqli = getMysqli();
 	
-	$sQuery = generateLessonQuery("FROM lesson, lessonrooms WHERE lesson.id = lessonrooms.lesson_id AND date = DATE_FORMAT(NOW(),\"%Y-%m-%d\") AND starttime < NOW() AND endtime > NOW() ORDER BY starttime, room_id;");
+	$sQuery = generateLessonQuery("FROM lesson, lessonrooms WHERE lesson.id = lessonrooms.lesson_id AND date = \"" . $sDate . "\" AND startlecturehour <= " . $sLectureHour . " AND endlecturehour > " . $sLectureHour . " ORDER BY startlecturehour, room_id;");
+	
+    if ($oResult = $oMysqli->query($sQuery)) {
+      echo formatLessonResult($sFormat, $oResult); 
+    } else {
+      echo errorInFormat($sFormat);
+    }	
+});
+
+/**
+ * Get's the schedule for now
+ */
+Flight::route('GET /schedule/datetime/now.@sFormat', function($sFormat){
+	$oMysqli = getMysqli();
+	
+	$sQuery = generateLessonQuery("FROM lesson, lessonrooms WHERE lesson.id = lessonrooms.lesson_id AND date = DATE_FORMAT(NOW(),\"%Y-%m-%d\") AND starttime <= NOW() AND endtime > NOW() ORDER BY startlecturehour, room_id;");
 	
     if ($oResult = $oMysqli->query($sQuery)) {
       echo formatLessonResult($sFormat, $oResult); 
@@ -209,9 +241,9 @@ Flight::route('GET /activity.json', function(){
 	}
  	
   if ($sSearchword != "") {
-   	$sQuery = "SELECT activity_id FROM search_activity WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
+   	$sQuery = "SELECT DISTINCT activity_id FROM search_activity WHERE searchwords LIKE '%" . $sSearchword . "%' LIMIT " . $iPageLimit . ";";
  	} else {
-   	$sQuery = "SELECT activity_id FROM search_activity;";
+   	$sQuery = "SELECT DISTINCT activity_id FROM search_activity;";
  	}
  	
   if ($oResult = $oMysqli->query($sQuery)) {

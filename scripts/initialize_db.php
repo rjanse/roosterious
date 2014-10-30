@@ -71,7 +71,7 @@
 	echo "OK!\n";
 	
 	echo "Creating lesson table...";
-	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), rooms VARCHAR(512), beta BOOL, PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, activity_id, activitytype_id, rooms));");
+	$oMysqli->query("CREATE TABLE IF NOT EXISTS lesson (id INT AUTO_INCREMENT, date DATE, starttime TIME, endtime TIME, startlecturehour INT, endlecturehour INT, activity_id VARCHAR(128), activitytype_id VARCHAR(128), description VARCHAR(512), summary VARCHAR(512), location VARCHAR(512), rooms VARCHAR(512), beta BOOL, PRIMARY KEY (id), CONSTRAINT uc_lessonunique UNIQUE (date, starttime, endtime, activity_id, activitytype_id, rooms));");
 	echo "OK!\n";
 	
 	
