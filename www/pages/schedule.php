@@ -210,6 +210,9 @@
 	    	var date = $('#datepicker > input').val();
 	    	var lecturehour = $("#lecturehourpicker").val();
 	    	
+			currentScheduleType = type;
+			currentScheduleId = date + "/" + lecturehour;
+	    	
 	    	loadSchedule(type, date + "/" + lecturehour, "Rooster van het <strong>" + lecturehour + "e</strong> lesuur op <strong>" + date + "</strong>");
 	    });
 	    
