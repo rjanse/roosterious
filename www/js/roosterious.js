@@ -69,19 +69,9 @@ $(function() {
 
 
 //Loads a schedule from the given api url and parses it in the given target
-function loadSchedule( type, id ) {
+function loadSchedule( type, id, title ) {
   $('#scheduleplaceholder').empty();
-  if (type == "lecturer") {
-    $("#schedulearea > div:first > span").html("Lesrooster van docent <strong>" + id + "</strong>");
-  } else if (type == "class") {
-    $("#schedulearea > div:first > span").html("Lesrooster van klas <strong>" + id + "</strong>");
-  } else if (type == "room") {
-    $("#schedulearea > div:first > span").html("Lesrooster van lokaal <strong>" + id + "</strong>");
-  } else if (type == "activity") {
-    $("#schedulearea > div:first > span").html("Lesrooster voor activiteit <strong>" + id + "</strong>");
-  } else if (type == "datetime") {
-    $("#schedulearea > div:first > span").html("Lesrooster voor dag en tijd <strong>" + id + "</strong>");
-  }
+  $("#schedulearea > div:first > span").html(title);
       
   var sApiUrl = "api/schedule/" + type + "/" + id + ".json";
   $.getJSON( sApiUrl , function( data ) {

@@ -9,7 +9,44 @@
           &nbsp;
         </div>
         <div class="panel-body">
-          
+	        <div id="unitselectorview" style="display: none;">
+		        <input type="hidden" id="searchfield" style="width:100%"/>
+	        </div>
+	        
+        	<div id="datetimeselectorview" role="form" style="display: none;">
+	        	<div class="form-group">
+		        	<label for="datepicker">Datum</label>
+		        	<div id="datepicker" class="input-append input-group">
+			        	<div class="add-on input-group-addon">
+				        	<i class="fa fa-calendar fa-fw"></i>
+				        </div>
+				        <input data-format="yyyy-MM-dd" type="text" class="form-control"></input>
+				    </div>
+				</div>
+				<div class="form-group"> 
+					<label for="lecturehourpicket">Lesuur</label>
+					<select id="lecturehourpicker" class="form-control">
+					  <option value="1">&nbsp;1 - &nbsp;8:30 - 9:15</option>
+					  <option value="2">&nbsp;2 - &nbsp;9:15 - 10:00</option>
+					  <option value="3">&nbsp;3 - 10:15 - 11:00</option>
+					  <option value="4">&nbsp;4 - 11:00 - 11:45</option>
+					  <option value="5">&nbsp;5 - 11:45 - 12:30</option>
+					  <option value="6">&nbsp;6 - 12:30 - 13:15</option>
+					  <option value="7">&nbsp;7 - 13:15 - 14:00</option>
+					  <option value="8">&nbsp;8 - 14:00 - 14:45</option>
+					  <option value="9">&nbsp;9 - 15:00 - 15:45</option>
+					  <option value="10">10 - 15:45 - 16:30</option>
+					  <option value="11">11 - 16:30 - 17:15</option>
+					  <option value="12">12 - 17:15 - 18:00</option>
+					  <option value="13">13 - 18:15 - 19:00</option>
+					  <option value="14">14 - 19:00 - 19:45</option>
+					  <option value="15">15 - 20:00 - 20:45</option>
+					  <option value="16">16 - 20:45 - 21:30</option>
+					</select>
+				</div>
+				<button id="submitdatetime">Haal rooster op</button>
+        	</div>
+        	
         </div>
       </div>
     </div>
@@ -62,52 +99,47 @@
       
       var placeholdertext = "";
       var apiUrl = "api/" + type + ".json";
-      var searchfieldenabled = false;
-      var datetimefieldenabled = false;
       
       if (type == "lecturer") {
         $("#searcharea > div:first").html("Toon rooster van docent");
-        $("#searcharea > .panel-body").html("<input type=\"hidden\" id=\"searchfield\" style=\"width:100%\"/>");
+        $("#unitselectorview").show();
         $("#searcharea").addClass("panel-red");
         $("#schedulearea > div:first > span").html("Lesrooster van <strong>niemand</strong>. Kies hierhoven een docent");
-        searchfieldenabled = true;
         
         placeholdertext = "Klik om een docent te zoeken";
       } else if (type == "class") {
         $("#searcharea > div:first").html("Toon rooster van klas");
-        $("#searcharea > .panel-body").html("<input type=\"hidden\" id=\"searchfield\" style=\"width:100%\"/>");
+        $("#unitselectorview").show();
         $("#searcharea").addClass("panel-green");
         $("#schedulearea > div:first > span").html("Lesrooster van <strong>geen enkele klas</strong>. Kies hierhoven een klas");
-        searchfieldenabled = true;
         
         placeholdertext = "Klik om een klas te zoeken";
       } else if (type == "room") {
         $("#searcharea > div:first").html("Toon rooster van lokaal");
-        $("#searcharea > .panel-body").html("<input type=\"hidden\" id=\"searchfield\" style=\"width:100%\"/>");
+        $("#unitselectorview").show();
         $("#searcharea").addClass("panel-primary");
         $("#schedulearea > div:first > span").html("Lesrooster van <strong>nergens</strong>. Kies hierhoven een lokaal");
-        searchfieldenabled = true;
         
         placeholdertext = "Klik om een lokaal te zoeken";
       } else if (type == "activity") {
         $("#searcharea > div:first").html("Toon rooster van activiteit");
-        $("#searcharea > .panel-body").html("<input type=\"hidden\" id=\"searchfield\" style=\"width:100%\"/>");
+        $("#unitselectorview").show();
         $("#searcharea").addClass("panel-yellow");
         $("#schedulearea > div:first > span").html("Lesrooster van <strong>niets</strong>. Kies hierhoven een activiteit");
-        searchfieldenabled = true;
         
         placeholdertext = "Klik om een activiteit te zoeken";        
       } else if (type == "datetime") {
         $("#searcharea > div:first").html("Toon rooster van dag en lesuur");
-        $("#searcharea > .panel-body").html("<div class=\"form-group\"><div id=\"datepicker\" class=\"input-append input-group\"><div class=\"add-on input-group-addon\"><i class=\"fa fa-calendar fa-fw\"></i></div><input data-format=\"yyyy-MM-dd\" type=\"text\" class=\"form-control\"></input></div> <div class=\"input-group\">Lesuur <input id=\"lecturehourpicker\" class=\"form-control\" type=\"number\" name=\"quantity\" min=\"1\" max=\"16\"></div><button id=\"submitdatetime\">Haal rooster op</button><button id=\"submitdatetimenow\">Haal rooster van NU op</button></div>");
+        $("#datetimeselectorview").show();
         $("#searcharea").addClass("panel-yellow");
         $("#schedulearea > div:first > span").html("Lesrooster van <strong>niets</strong>. Kies hierhoven een datum en lesuur");
-        datetimefieldenabled = true;
         
         placeholdertext = "Klik om een activiteit te zoeken";        
       }
       
-     if (searchfieldenabled) {
+     if($('#unitselectorview').is(':visible')) {
+	    //UNITSELECTOR VIEW VISIBLE
+	     
 		$("#searchfield").select2({
 		   placeholder: placeholdertext,
 		   minimumInputLength: 1,
@@ -154,28 +186,35 @@
 		$("#searchfield").on("select2-selecting", function(e) {
 		  currentScheduleType = type;
 		  currentScheduleId = e.choice.id;
-		  loadSchedule(type, e.choice.id);
+		  
+		  var title = "";
+		  if (type == "lecturer") {
+			  title = "Rooster van docent <strong>" + e.choice.id + "</strong>";
+		  } else if (type == "class") {
+			  title = "Rooster van klas <strong>" + e.choice.id + "</strong>";
+		  } else if (type == "room") {
+			  title = "Rooster van lokaal <strong>" + e.choice.id + "</strong>";
+		  } else if (type == "activity") {
+			  title = "Rooster van activiteit <strong>" + e.choice.id + "</strong>";
+		  }
+		  loadSchedule(type, e.choice.id, title);
 		});   
-     }
-     
-     if (datetimefieldenabled) {
+     } else if($('#datetimeselectorview').is(':visible')) {
+	    //DATETIMESELECTOR VIEW VISIBLE
+	     
 	    $('#datepicker').datetimepicker({
-		 	pickTime: false
-    	});
+		 	pickTime: false,
+    	}).data('datetimepicker').setLocalDate(new Date());
     	
     	$("#submitdatetime").on("click", function(e) {
 	    	var date = $('#datepicker > input').val();
 	    	var lecturehour = $("#lecturehourpicker").val();
 	    	
-	    	loadSchedule(type, date + "/" + lecturehour);
+	    	loadSchedule(type, date + "/" + lecturehour, "Rooster van het <strong>" + lecturehour + "e</strong> lesuur op <strong>" + date + "</strong>");
 	    });
 	    
-	    $("#submitdatetimenow").on("click", function(e) {
-	    	var date = $('#datepicker > input').val();
-	    	var lecturehour = $("#lecturehourpicker").val();
-	    	
-	    	loadSchedule(type, "now");
-	    });
+	    //Get default schedule for now
+	    loadSchedule(type, "now", "Rooster van dit moment");
      }
     
     //Check if system is updating
