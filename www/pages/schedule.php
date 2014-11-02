@@ -72,11 +72,19 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu pull-right" role="menu">
+	                <li role="presentation" class="dropdown-header">Download rooster</li>
                     <li><a href="#" onClick="loadExt('iCal');"><i class="fa fa-calendar fa-fw"></i> iCal</a>
                     </li>
                     <li><a href="#" onClick="loadExt('json');"><i class="fa fa-file-code-o fa-fw"></i> json</a>
                     </li>
                     <li><a href="#" onClick="loadExt('csv');"><i class="fa fa-file-excel-o fa-fw"></i> CSV</a>
+                    </li>
+                    <li role="presentation" class="dropdown-header">Kopieer link</li>
+                    <li><a href="#" onClick="copyExt('iCal');"><i class="fa fa-calendar fa-fw"></i> iCal</a>
+                    </li>
+                    <li><a href="#" onClick="copyExt('json');"><i class="fa fa-file-code-o fa-fw"></i> json</a>
+                    </li>
+                    <li><a href="#" onClick="copyExt('csv');"><i class="fa fa-file-excel-o fa-fw"></i> CSV</a>
                     </li>
                 </ul>
             </div>

@@ -205,13 +205,28 @@ function loadSchedule( type, id, title ) {
 function loadExt(extType) {
   if (currentScheduleType != "") {
     if (extType == "iCal") {
-       alert('Binnenkort beschikbaar!');
+      window.location = "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".ical";
     } else if (extType == "json") {
       window.location = "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".json";
     } else if (extType == "csv") {
-      alert('Binnenkort beschikbaar!');
+      window.location = "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".csv";
     }
   } else {
     alert("Kies eerst een rooster");  
   }
+}
+
+//Copy link to external file to clipboard
+function copyExt(extType) {
+	var url = "http://www.roosterious.nl/";
+	if (extType == "iCal") {
+      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".ical";
+    } else if (extType == "json") {
+      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".json";
+    } else if (extType == "csv") {
+      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".csv";
+    }
+    
+    $('#copyexturl').html(url);
+    $('#copyext').modal({});
 }

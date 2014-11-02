@@ -4,29 +4,91 @@
  */
 require_once(dirname(__FILE__) . "/../../inc/commons.inc.php");
 require_once(dirname(__FILE__) . "/../../inc/lib/flight/flight/Flight.php");
+require_once(dirname(__FILE__) . "/../../inc/lib/icalcreator/iCalcreator.class.php");
 
 /**
  * Returns a generic query to get lesson rows
  */
 function generateLessonQuery($sFrom) {
-	return "SELECT date, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, startlecturehour, endlecturehour, activity_id AS activity, activitytype_id AS activitytype, 
+	return "SELECT date, WEEK(date) as weeknr, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, startlecturehour, endlecturehour, activity_id AS activity, activitytype_id AS activitytype, 
   (SELECT GROUP_CONCAT(lecturer_id) FROM lessonlecturers WHERE lesson_id=id) AS lecturers, 
   (SELECT GROUP_CONCAT(class_id) FROM lessonclasses WHERE lesson_id=id) AS classes,
   (SELECT GROUP_CONCAT(room_id) FROM lessonrooms WHERE lesson_id=id) AS rooms
-	, beta AS is_beta, WEEK(date) as weeknr " . $sFrom;
+	, beta AS is_beta " . $sFrom;
 }
 
 function getFromDateString() {
   return "CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) - 2 DAY";
 }
 
+
+function formatDbResult($sFormat, $oResult, $sFilename = "response") {
+	if ($sFormat == "json") {
+		header('Content-Type: application/json; charset=utf-8');
+		header('Content-Disposition: attachment; filename=' . $sFilename . '.json');
+		
+	    $sJson = "{\"status\": \"ok\", \"response\": [";
+	    $bFirst = true;
+	    while($aObject = $oResult->fetch_assoc()) {
+	      if (!$bFirst) {
+	      	$sJson .= ",";
+	      } else {
+	      	$bFirst = false;
+	      }
+	 	  $sJson .= json_encode($aObject);
+	    }
+	    $sJson .= "]}";
+	    return $sJson;
+  } else if ($sFormat == "csv") {
+	  header('Content-Type: text/csv; charset=utf-8');
+	  header('Content-Disposition: attachment; filename=' . $sFilename . '.csv');
+	  
+	  $fOutput = fopen('php://output', 'w');
+	  fputs($fOutput, "sep=,\n");
+	  
+	  fputcsv($fOutput, array('datum', 'weeknr', 'dag_van_de_week', 'starttijd', 'eindtijd', 'startlesuur', 'eindlesuur', 'activiteit', 'activiteittype', 'docenten', 'klassen', 'lokalen', 'is_beta'));
+	  
+	  while ($aObject = $oResult->fetch_assoc()) {
+		  fputcsv($fOutput, $aObject);
+	  }
+  }
+}
+
 /**
- * Format a lesson result to json or ical
+ * Format a lesson result to json, ical or csv
  */
-function formatLessonResult($sFormat, $oResult) {
+function formatLessonResult($sFormat, $oResult, $sTitle = "Rooster", $sDescription = "", $sFilename = "schedule") {
   if ($sFormat == "ical") {
-  
+	date_default_timezone_set('Europe/Amsterdam');
+  	header('Content-type: text/calendar; charset=utf-8');
+  	header('Content-Disposition: attachment; filename=' . $sFilename . '.ical');
+
+	$config    = array( "unique_id" => "roosterious.nl", "TZID" => "Europe/Amsterdam" );
+	$vcalendar = new vcalendar( $config );
+	$vcalendar->setProperty( "method",        "PUBLISH" );
+	$vcalendar->setProperty( "x-wr-calname",  $sTitle );
+	$vcalendar->setProperty( "X-WR-CALDESC",  $sDescription );
+	$vcalendar->setProperty( "X-WR-RELCALID", uniqid() );
+	$vcalendar->setProperty( "X-WR-TIMEZONE", "Europe/Amsterdam" );
+	
+	while($aObject = $oResult->fetch_assoc()) {
+		$vevent = & $vcalendar->newComponent( "vevent" );
+		$vevent->setProperty("DTSTART", date('Ymd\THis', strtotime($aObject['date'] . " " . $aObject['starttime'])));
+		$vevent->setProperty("DTEND", date('Ymd\THis', strtotime($aObject['date'] . " " . $aObject['endtime'])));
+		$vevent->setProperty("SUMMARY" , $aObject['activitytype'] . " - " . $aObject['activity']);
+		$vevent->setProperty("LOCATION", $aObject['rooms']);
+		$vevent->setProperty("DESCRIPTION", "Klassen: " . $aObject['classes'] . "\nDocenten: " . $aObject['lecturers']);
+	}
+	
+	//Timezone
+	$xprops = array( "X-LIC-LOCATION" => "Europe/Amsterdam" );
+	iCalUtilityFunctions::createTimezone( $vcalendar, "Europe/Amsterdam", $xprops );
+	
+	$vcalendar->returnCalendar(); 
   } else if ($sFormat == "json") {
+	header('Content-Type: application/json; charset=utf-8');
+	header('Content-Disposition: attachment; filename=' . $sFilename . '.json');
+	
     $sJson = "{\"status\": \"ok\", \"response\": [";
     $bFirst = true;
     while($aObject = $oResult->fetch_assoc()) {
@@ -39,6 +101,18 @@ function formatLessonResult($sFormat, $oResult) {
     }
     $sJson .= "]}";
     return $sJson;
+  } else if ($sFormat == "csv") {
+	  header('Content-Type: text/csv; charset=utf-8');
+	  header('Content-Disposition: attachment; filename=' . $sFilename . '.csv');
+	  
+	  $fOutput = fopen('php://output', 'w');
+	  fputs($fOutput, "sep=,\n");
+	  
+	  fputcsv($fOutput, array('datum', 'weeknr', 'dag_van_de_week', 'starttijd', 'eindtijd', 'startlesuur', 'eindlesuur', 'activiteit', 'activiteittype', 'docenten', 'klassen', 'lokalen', 'is_beta'));
+	  
+	  while ($aObject = $oResult->fetch_assoc()) {
+		  fputcsv($fOutput, $aObject);
+	  }
   }
 }
 
@@ -54,6 +128,9 @@ function errorInFormat($sFormat, $sMessage = "") {
   }
 }
 
+
+
+
 /**
  * Get's the schedule for a specified lecturer
  */
@@ -66,7 +143,7 @@ Flight::route('GET /schedule/lecturer/@sLecturerId\.@sFormat', function($sLectur
     $sQuery = generateLessonQuery("FROM lesson,lessonlecturers WHERE lesson.id = lessonlecturers.lesson_id AND lecturer_id = \"" . $sLecturerId . "\" AND date >= " . getFromDateString() . " ORDER BY date, starttime;");
 
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult($sFormat, $oResult); 
+      echo formatLessonResult($sFormat, $oResult, $sLecturerId, "Opgebouwd vanuit Roosterious", $sLecturerId); 
     } else {
       echo errorInFormat($sFormat);
     }
@@ -80,7 +157,7 @@ Flight::route('GET /schedule/class/@sClassId\.@sFormat', function($sClassId, $sF
     $sQuery = generateLessonQuery("FROM lesson,lessonclasses WHERE lesson.id = lessonclasses.lesson_id AND class_id = \"" . $sClassId . "\" AND date >= " . getFromDateString() . " ORDER BY date, starttime");
     
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult($sFormat, $oResult); 
+      echo formatLessonResult($sFormat, $oResult, $sClassId, "Opgebouwd vanuit Roosterious", $sClassId); 
     } else {
       echo errorInFormat($sFormat);
     }
@@ -94,7 +171,7 @@ Flight::route('GET /schedule/room/@sRoomId\.@sFormat', function($sRoomId, $sForm
     $sQuery = generateLessonQuery("FROM lesson,lessonrooms WHERE lesson.id = lessonrooms.lesson_id AND room_id = \"" . $sRoomId . "\" AND date >= " . getFromDateString() . " ORDER BY date, starttime");
     
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult($sFormat, $oResult); 
+      echo formatLessonResult($sFormat, $oResult, $sRoomId, "Opgebouwd vanuit Roosterious", $sRoomId); 
     } else {
       echo errorInFormat($sFormat);
     }
@@ -108,7 +185,7 @@ Flight::route('GET /schedule/activity/@sActivityId\.@sFormat', function($sActivi
     $sQuery = generateLessonQuery("FROM lesson WHERE activity_id = \"" . $sActivityId . "\" AND date >= " . getFromDateString() . " ORDER BY date, starttime");
     
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult($sFormat, $oResult); 
+      echo formatLessonResult($sFormat, $oResult, $sActivityId, "Opgebouwd vanuit Roosterious", $sActivityId); 
     } else {
       echo errorInFormat($sFormat);
     }
@@ -132,7 +209,7 @@ Flight::route('GET /schedule/datetime/@sDate/@sLectureHour\.@sFormat', function(
 	$sQuery = generateLessonQuery("FROM lesson, lessonrooms WHERE lesson.id = lessonrooms.lesson_id AND date = \"" . $sDate . "\" AND startlecturehour <= " . $sLectureHour . " AND endlecturehour > " . $sLectureHour . " ORDER BY startlecturehour, room_id;");
 	
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult($sFormat, $oResult); 
+      echo formatLessonResult($sFormat, $oResult, $sLectureHour . "e lesuur op " . $sDate, "Opgebouwd vanuit Roosterious", $sDate . "_" . $sLectureHour); 
     } else {
       echo errorInFormat($sFormat);
     }	
@@ -147,7 +224,7 @@ Flight::route('GET /schedule/datetime/now.@sFormat', function($sFormat){
 	$sQuery = generateLessonQuery("FROM lesson, lessonrooms WHERE lesson.id = lessonrooms.lesson_id AND date = DATE_FORMAT(NOW(),\"%Y-%m-%d\") AND starttime <= NOW() AND endtime > NOW() ORDER BY startlecturehour, room_id;");
 	
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult($sFormat, $oResult); 
+      echo formatLessonResult($sFormat, $oResult, "nu", "Opgebouwd vanuit Roosterious", "nu"); 
     } else {
       echo errorInFormat($sFormat);
     }	
@@ -156,7 +233,7 @@ Flight::route('GET /schedule/datetime/now.@sFormat', function($sFormat){
 /**
  * Get's a lecturer, based on search query
  */
-Flight::route('GET /lecturer.json', function(){
+Flight::route('GET /lecturer.@sFormat', function($sFormat){
 	$oMysqli = getMysqli();
 	
   $sSearchword = Flight::request()->query->q;
@@ -172,7 +249,7 @@ Flight::route('GET /lecturer.json', function(){
  	}
 	
   if ($oResult = $oMysqli->query($sQuery)) {
-    echo formatLessonResult("json", $oResult); 
+    echo formatDbResult($sFormat, $oResult); 
   } else {
     echo errorInFormat("json");
   }	
@@ -181,7 +258,7 @@ Flight::route('GET /lecturer.json', function(){
 /**
  * Get's a class, based on search query
  */
-Flight::route('GET /class.json', function(){
+Flight::route('GET /class.@sFormat', function($sFormat){
 	$oMysqli = getMysqli();
 	
   $sSearchword = Flight::request()->query->q;
@@ -197,7 +274,7 @@ Flight::route('GET /class.json', function(){
  	}
  	
   if ($oResult = $oMysqli->query($sQuery)) {
-    echo formatLessonResult("json", $oResult); 
+    echo formatDbResult($sFormat, $oResult);
   } else {
     echo errorInFormat("json");
   }	
@@ -206,7 +283,7 @@ Flight::route('GET /class.json', function(){
 /**
  * Get's a room, based on search query
  */
-Flight::route('GET /room.json', function(){
+Flight::route('GET /room.@sFormat', function($sFormat){
 	$oMysqli = getMysqli();
 	
   $sSearchword = Flight::request()->query->q;
@@ -222,7 +299,7 @@ Flight::route('GET /room.json', function(){
  	}
  	
   if ($oResult = $oMysqli->query($sQuery)) {
-    echo formatLessonResult("json", $oResult); 
+    echo formatDbResult($sFormat, $oResult);
   } else {
     echo errorInFormat("json");
   }	
@@ -231,7 +308,7 @@ Flight::route('GET /room.json', function(){
 /**
  * Get's a activity, based on search query
  */
-Flight::route('GET /activity.json', function(){
+Flight::route('GET /activity.@sFormat', function($sFormat){
 	$oMysqli = getMysqli();
 	
   $sSearchword = Flight::request()->query->q;
@@ -247,7 +324,7 @@ Flight::route('GET /activity.json', function(){
  	}
  	
   if ($oResult = $oMysqli->query($sQuery)) {
-    echo formatLessonResult("json", $oResult); 
+    echo formatDbResult($sFormat, $oResult);
   } else {
     echo errorInFormat("json");
   }	
@@ -261,7 +338,7 @@ Flight::route('GET /stats/dashboard.json', function() {
 	
 	$sQuery = "SELECT * FROM stats_updates WHERE date = (SELECT max(date) FROM stats_updates);";
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult("json", $oResult); 
+      echo formatDbResult("json", $oResult);
     } else {
       echo errorInFormat("json");
     }	
@@ -275,7 +352,7 @@ Flight::route('GET /stats/updates.json', function() {
 	
 	$sQuery = "SELECT * FROM stats_updates WHERE date > DATE_SUB(CURDATE(), INTERVAL 1 YEAR) ORDER BY date DESC;";
     if ($oResult = $oMysqli->query($sQuery)) {
-      echo formatLessonResult("json", $oResult); 
+      echo formatDbResult("json", $oResult);
     } else {
       echo errorInFormat("json");
     }	
