@@ -32,7 +32,7 @@ function getFromDateString() {
 function formatDbResult($sFormat, $oResult, $sFilename = "response") {
 	if ($sFormat == "json") {
 		header('Content-Type: application/json; charset=utf-8');
-		//header('Content-Disposition: attachment; filename=' . $sFilename . '.json');
+		header('Content-Disposition: attachment; filename=' . $sFilename . '.json');
 		
 	    $sJson = "{\"status\": \"ok\", \"response\": [";
 	    $bFirst = true;
@@ -142,7 +142,7 @@ function errorInFormat($sFormat, $sMessage = "") {
  * Get's the schedule for a specified lecturer
  */
 Flight::route('GET /schedule/lecturer/@sLecturerId\.@sFormat', function($sLecturerId, $sFormat){
-	if (!preg_match('/^[A-Za-z0-9]{5}$/', $sLecturerId)) {
+	if (!preg_match('/^[A-Za-z0-9]+$/', $sLecturerId)) {
 		echo errorInFormat($sFormat, "Lecturer id should be in format XXXXX (five letters or numbers)");
 		return;
 	}
@@ -243,7 +243,7 @@ Flight::route('GET /schedule/datetime/now.@sFormat', function($sFormat){
  * Get's the freebusy schedule for a lecturer
  */
 Flight::route('GET /freebusy/lecturer/@sLecturerId\.json', function($sLecturerId){
-	if (!preg_match('/^[A-Za-z0-9]{5}$/', $sLecturerId)) {
+	if (!preg_match('/^[A-Za-z0-9]+$/', $sLecturerId)) {
 		echo errorInFormat("json", "Lecturer id should be in format XXXXX (five letters or numbers)");
 		return;
 	}
