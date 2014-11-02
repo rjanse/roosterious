@@ -41,6 +41,12 @@ $(function() {
       $("#menu_datetime").addClass("active");
     });
     
+    $("#menu_freebusytool").click(function() {
+      $("#page-wrapper").load("pages/freebusy.php");
+      $(".menu").removeClass("active");
+      $("#menu_freebusytool").addClass("active");
+    });
+    
     $("#page-wrapper").load("pages/dashboard.phtml");
 });
 
@@ -199,6 +205,72 @@ function loadSchedule( type, id, title ) {
   		outputHtml += "</tbody></table>";
   		$('#scheduleplaceholder').append(outputHtml);
   });
+}
+
+//Loads a freebusy list from the given api url and parses it in the given target
+function loadFreebusyList( type, title, sApiUrl ) {
+	function generateTable(theId) {
+		return "<table id=\"" + theId + "\" class=\"table table-bordered\"><tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr></table>";
+	}
+	
+	$.getJSON( sApiUrl , function( data ) {
+		var currentdate = "";
+		
+		$.each(data.response, function(index, lesson){
+			var id = lesson.date.replace(/-/g,"");
+			var tableId = id + "_" + title.replace(/[ \.]/g,"");
+			
+			var buttoncolor = "";
+			var cellcolor = "";
+			if (type == "lecturer") {
+				buttoncolor = "btn-danger";
+				cellcolor = "danger";
+			} else if (type == "class") {
+				buttoncolor = "btn-success";
+				cellcolor = "success";
+			} else if (type == "room") {
+				buttoncolor = "btn-primary";
+				cellcolor = "info";
+			}
+			
+			//Add row when not exists
+			if (currentdate != lesson.date) {
+				if ($('#' + id).length == 0) {
+					$("#freebusyarea").append("<div id=\"" + id + "\" class=\"panel panel-default\"><div class=\"panel-heading\">" + lesson.date + "</div>" +
+					"<div class=\"panel-body\"><div class=\"freebusyrow\"><button type=\"button\" class=\"btn " + buttoncolor + " btn-xs tag\">" + title + "</button>" +
+					generateTable(tableId) +
+					"</div></div></div>");
+				} else {
+					var row = "<div class=\"freebusyrow\"><button type=\"button\" class=\"btn " + buttoncolor + " btn-xs tag\">" + title + "</button>" +
+					generateTable(tableId) +
+					"</div>";
+					$("#freebusyarea > #" + id + " > .panel-body").append(row);
+				}
+			}
+
+			//Loop through lessonhours
+			$("#" + tableId + " td").each(function( index ) {
+				var lecturehour = index + 1;
+				if (lesson.lecturehours.indexOf("" + lecturehour) > -1) {
+					$(this).addClass(cellcolor);
+					$(this).attr("title", lesson.activitytype + " - " + lesson.activity);
+				}
+			});
+			
+			
+			currentdate = lesson.date;
+		});
+		
+		
+		//Resort list
+		$("#freebusyarea").children(".panel").sort(function (a, b) {
+		    return parseInt(a.id) > parseInt(b.id);
+		}).each(function () {
+		    var elem = $(this);
+		    elem.remove();
+		    $(elem).appendTo("#freebusyarea");
+		});
+	});
 }
 
 //Load external file

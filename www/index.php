@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Roosterious v0.4</a>
+                <a class="navbar-brand" href="index.html">Roosterious v0.5alpha</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -96,6 +96,12 @@
                         </li>
                         <li>
                             <a href="#" class="menu" id="menu_datetime"><i class="fa fa-clock-o fa-fw"></i> Datum en tijd</a>
+                        </li>
+                        <li>
+                         &nbsp;
+                        </li>
+                        <li>
+                            <a href="#" class="menu" id="menu_freebusytool"><i class="fa fa-calendar-o fa-fw"></i> Planningtool</a>
                         </li>
                     </ul>
                 </div>
