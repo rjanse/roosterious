@@ -61,44 +61,6 @@
             </div>
             <!-- /.navbar-header -->
 
-            <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-alerts">
-	                    <li>
-                            <a href="#">
-                                <div>
-                                    <i class="fa fa-comment fa-fw"></i> Datum en tijd view toegevoegd. Layout nog niet optimaal, maar werkt wel
-                                    <span class="pull-right text-muted small">30 Oktober 2014, 22:17</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <div>
-                                    <i class="fa fa-comment fa-fw"></i> Hmmm, moet nog wat dingen fixen. Zoals een manier zien te vinden om je rooster te bookmarken.
-                                    <span class="pull-right text-muted small">14 Oktober 2014, 12:01</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="#">
-                                <div>
-                                    <i class="fa fa-comment fa-fw"></i> Hoera, Nieuwe layout Roosterious is klaar!
-                                    <span class="pull-right text-muted small">14 Oktober 2014, 12:00</span>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-alerts -->
-                </li>
-                <!-- /.dropdown -->
-            </ul>
-            <!-- /.navbar-top-links -->
-
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
