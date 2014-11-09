@@ -76,6 +76,17 @@ $(function() {
 
 //Loads a schedule from the given api url and parses it in the given target
 function loadSchedule( type, id, title ) {
+  if (title == undefined) {
+  	  if (type == "lecturer") {
+		  title = "Rooster van docent <strong>" + id+ "</strong>";
+	  } else if (type == "class") {
+		  title = "Rooster van klas <strong>" + id + "</strong>";
+	  } else if (type == "room") {
+		  title = "Rooster van lokaal <strong>" + id + "</strong>";
+	  } else if (type == "activity") {
+		  title = "Rooster van activiteit <strong>" + id + "</strong>";
+	  }
+  }
   $('#scheduleplaceholder').empty();
   $("#schedulearea > div:first > span").html(title);
       
@@ -260,7 +271,6 @@ function loadFreebusyList( type, title, sApiUrl ) {
 			
 			currentdate = lesson.date;
 		});
-		
 		
 		//Resort list
 		$("#freebusyarea").children(".panel").sort(function (a, b) {
