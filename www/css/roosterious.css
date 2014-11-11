@@ -14,3 +14,16 @@
 .schedule_emptyrow {
   height:50px;
 }
+
+.freebusycell_selected {
+	font-weight: 800;
+}
+
+.freebusyrow {
+	vertical-align: middle;
+}
+
+.freebusyrow_button {
+	width: 100px;
+	overflow: hidden;
+}

@@ -21,7 +21,7 @@ function generateScheduleQuery($sFrom) {
  * Returns a generic query to get freebusy rows
  */
 function generateFreebusyQuery($sFrom) {
-	return "SELECT date, WEEK(date) as weeknr, DATE_FORMAT(date, \"%w\") AS day_of_week, (SELECT GROUP_CONCAT(lecturehour) FROM lecturetimes WHERE starttime >= lesson.starttime AND endtime <= lesson.endtime) AS lecturehours, activity_id AS activity, activitytype_id AS activitytype, beta AS is_beta " . $sFrom;
+	return "SELECT date, WEEK(date) as weeknr, DATE_FORMAT(date, \"%w\") AS day_of_week, TIME_FORMAT(starttime, \"%H:%i\") AS starttime, TIME_FORMAT(endtime, \"%H:%i\") AS endtime, (SELECT GROUP_CONCAT(lecturehour) FROM lecturetimes WHERE starttime >= lesson.starttime AND endtime <= lesson.endtime) AS lecturehours, activity_id AS activity, activitytype_id AS activitytype, beta AS is_beta " . $sFrom;
 }
 
 function getFromDateString() {
@@ -383,6 +383,21 @@ Flight::route('GET /activity.@sFormat', function($sFormat){
  	
   if ($oResult = $oMysqli->query($sQuery)) {
     echo formatDbResult($sFormat, $oResult);
+  } else {
+    echo errorInFormat("json");
+  }	
+});
+
+/**
+ * Get's a lessondays in the upcoming 8 weeks
+ */
+Flight::route('GET /lessondays.json', function(){
+   $oMysqli = getMysqli();
+
+   $sQuery = "SELECT DISTINCT(date) AS date, DATE_FORMAT(date, \"%w\") AS day_of_week FROM lesson WHERE date >= NOW() && date < DATE_ADD(NOW(), INTERVAL 20 WEEK);";
+  
+  if ($oResult = $oMysqli->query($sQuery)) {
+    echo formatDbResult("json", $oResult);
   } else {
     echo errorInFormat("json");
   }	

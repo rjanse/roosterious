@@ -73,6 +73,61 @@ $(function() {
     })
 });
 
+//Parse a date to a readable format
+function parseDate(nwDate, nwNum) {
+	var dayofweek = parseDayOfWeek(nwNum);
+	
+	var d = new Date(nwDate);
+	return dayofweek + " " + d.getDate() + " " + parseMonth(d.getMonth()) + " " + d.getFullYear();
+}
+
+//Parse day of week
+function parseDayOfWeek(num) {
+	if (num == 0) {
+		return "Zondag";
+	} else if (num == 1) {
+		return "Maandag";
+	} else if (num == 2) {
+		return "Dinsdag";
+	} else if (num == 3) {
+		return "Woensdag";
+	} else if (num == 4) {
+		return "Donderdag";
+	} else if (num == 5) {
+		return "Vrijdag";
+	} else if (num == 6) {
+		return "Zaterdag";
+	}
+}
+
+//Parse month
+function parseMonth(num) {
+	if (num == 0) {
+		return "januari";
+	} else if (num == 1) {
+		return "februari";
+	} else if (num == 2) {
+		return "maart";
+	} else if (num == 3) {
+		return "april";
+	} else if (num == 4) {
+		return "mei";
+	} else if (num == 5) {
+		return "juni";
+	} else if (num == 6) {
+		return "juli";
+	} else if (num == 7) {
+		return "augustus";
+	} else if (num == 8) {
+		return "september";
+	} else if (num == 9) {
+		return "oktober";
+	} else if (num == 10) {
+		return "november";
+	} else if (num == 11) {
+		return "december";
+	}
+}
 
 //Loads a schedule from the given api url and parses it in the given target
 function loadSchedule( type, id, title ) {
@@ -103,34 +158,19 @@ function loadSchedule( type, id, title ) {
   		$.each(data.response, function(index, lesson){
   		  //Check day of lesson date
   			if (currentdate != lesson.date) {
-  				var dayofweek = "";
-  				if (lesson.day_of_week == 0) {
-  					dayofweek = "zondag";
-  				} else if (lesson.day_of_week == 1) {
-  					dayofweek = "maandag";
-  				} else if (lesson.day_of_week == 2) {
-  					dayofweek = "dinsdag";
-  				} else if (lesson.day_of_week == 3) {
-  					dayofweek = "woensdag";
-  				} else if (lesson.day_of_week == 4) {
-  					dayofweek = "donderdag";
-  				} else if (lesson.day_of_week == 5) {
-  					dayofweek = "vrijdag";
-  				} else if (lesson.day_of_week == 6) {
-  					dayofweek = "zaterdag";
-  				}
+  				var dateDesc = parseDate(lesson.date, lesson.day_of_week);
   				
   				if (currentweek != lesson.weeknr) {
     				//New week
     				if (firstWeek) {
-    				  outputHtml+= "<tr class=\"info\"><td colspan=\"6\"><strong>Week " + lesson.weeknr + "</strong></td></tr><tr class=\"success\"><td colspan=\"6\">" + dayofweek + " (" + lesson.date + ")</td></tr><tr>";  
+    				  outputHtml+= "<tr class=\"info\"><td colspan=\"6\"><strong>Week " + lesson.weeknr + "</strong></td></tr><tr class=\"success\"><td colspan=\"6\"><small>" + dateDesc + "</small></td></tr><tr>";  
     				  firstWeek = false;
     				} else {
-    				  outputHtml+= "</tr><tr><td class=\"schedule_emptyrow\" colspan=\"6\">&nbsp;</td></tr><tr class=\"info\"><td colspan=\"6\"><strong>Week " + lesson.weeknr + "</strong></td></tr><tr class=\"success\"><td colspan=\"6\">" + dayofweek + " (" + lesson.date + ")</td></tr><tr>";
+    				  outputHtml+= "</tr><tr><td class=\"schedule_emptyrow\" colspan=\"6\">&nbsp;</td></tr><tr class=\"info\"><td colspan=\"6\"><strong>Week " + lesson.weeknr + "</strong></td></tr><tr class=\"success\"><td colspan=\"6\"><small>" + dateDesc + "</small></td></tr><tr>";
     				}
   				} else {
     				//New day
-    				outputHtml+= "</tr><tr class=\"success\"><td colspan=\"6\"><small>" + dayofweek + " (" + lesson.date + ")</small></td></tr><tr>";
+    				outputHtml+= "</tr><tr class=\"success\"><td colspan=\"6\"><small>" + dateDesc + "</small></td></tr><tr>";
   				}
         } else {
           //New entry on the same day
@@ -138,7 +178,7 @@ function loadSchedule( type, id, title ) {
         }
         
         currentdate = lesson.date;
-  			currentweek = lesson.weeknr;
+  		currentweek = lesson.weeknr;
   			
         if (lesson.is_beta == "1") {
   		    outputHtml+= "<td class=\"schedule_column schedule_nowrap\">" + lesson.starttime + " - " + lesson.endtime + "<i class=\"fa fa-filter fa-fw\"></i></td>";
@@ -220,65 +260,47 @@ function loadSchedule( type, id, title ) {
 
 //Loads a freebusy list from the given api url and parses it in the given target
 function loadFreebusyList( type, title, sApiUrl ) {
-	function generateTable(theId) {
-		return "<table id=\"" + theId + "\" class=\"table table-bordered\"><tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr></table>";
-	}
-	
 	$.getJSON( sApiUrl , function( data ) {
 		var currentdate = "";
+		var buttoncolor = "";
+		var cellcolor = "";
+		if (type == "lecturer") {
+			buttoncolor = "btn-danger";
+			cellcolor = "danger";
+		} else if (type == "class") {
+			buttoncolor = "btn-success";
+			cellcolor = "success";
+		} else if (type == "room") {
+			buttoncolor = "btn-primary";
+			cellcolor = "info";
+		}
+			
+		$(".freebusyday").each(function() {
+			var tableId = $(this).attr('id') + "_" + title.replace(/[ \.]/g,"");
+			var row = "<div class=\"freebusyrow\">" +
+			"<table id=\"" + tableId + "\" class=\"table table-bordered\"><tr><td><button type=\"button\" class=\"btn " + buttoncolor + " tag freebusyrow_button\">" + title + "</button></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td></tr></table>" +
+			"</div>";
+
+			$(this).append(row);			
+		});
 		
 		$.each(data.response, function(index, lesson){
 			var id = lesson.date.replace(/-/g,"");
 			var tableId = id + "_" + title.replace(/[ \.]/g,"");
+			var lecturehours = lesson.lecturehours.split(",");
 			
-			var buttoncolor = "";
-			var cellcolor = "";
-			if (type == "lecturer") {
-				buttoncolor = "btn-danger";
-				cellcolor = "danger";
-			} else if (type == "class") {
-				buttoncolor = "btn-success";
-				cellcolor = "success";
-			} else if (type == "room") {
-				buttoncolor = "btn-primary";
-				cellcolor = "info";
-			}
-			
-			//Add row when not exists
-			if (currentdate != lesson.date) {
-				if ($('#' + id).length == 0) {
-					$("#freebusyarea").append("<div id=\"" + id + "\" class=\"panel panel-default\"><div class=\"panel-heading\">" + lesson.date + "</div>" +
-					"<div class=\"panel-body\"><div class=\"freebusyrow\"><button type=\"button\" class=\"btn " + buttoncolor + " btn-xs tag\">" + title + "</button>" +
-					generateTable(tableId) +
-					"</div></div></div>");
-				} else {
-					var row = "<div class=\"freebusyrow\"><button type=\"button\" class=\"btn " + buttoncolor + " btn-xs tag\">" + title + "</button>" +
-					generateTable(tableId) +
-					"</div>";
-					$("#freebusyarea > #" + id + " > .panel-body").append(row);
-				}
-			}
-
 			//Loop through lessonhours
 			$("#" + tableId + " td").each(function( index ) {
-				var lecturehour = index + 1;
-				if (lesson.lecturehours.indexOf("" + lecturehour) > -1) {
+				var lecturehour = "" + (index);
+				if ($.inArray(lecturehour, lecturehours) != -1) {
 					$(this).addClass(cellcolor);
-					$(this).attr("title", lesson.activitytype + " - " + lesson.activity);
+					$(this).addClass("freebusycell_selected");
+					
+					$(this).attr("title", lesson.starttime + " - " + lesson.endtime + ": " + lesson.activitytype + " - " + lesson.activity);
 				}
 			});
 			
-			
 			currentdate = lesson.date;
-		});
-		
-		//Resort list
-		$("#freebusyarea").children(".panel").sort(function (a, b) {
-		    return parseInt(a.id) > parseInt(b.id);
-		}).each(function () {
-		    var elem = $(this);
-		    elem.remove();
-		    $(elem).appendTo("#freebusyarea");
 		});
 	});
 }

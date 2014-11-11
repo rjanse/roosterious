@@ -55,6 +55,27 @@
      
 <script type="text/javascript">
   $(function() {
+	 
+	//Load lessondays and generate panels
+	$.getJSON( 'api/lessondays.json' , function( data ) {
+		var prevdayofweek = -1;
+		$.each(data.response, function(index, obj) {
+			var id = obj.date.replace(/-/g,"");
+			
+			if (obj.day_of_week < prevdayofweek) {
+				$("#freebusyarea").append("<div>&nbsp;</div>");	
+			}
+			
+			$("#freebusyarea").append("<div class=\"panel panel-default\"><div class=\"panel-heading\">" + parseDate(obj.date, obj.day_of_week) + "</div>" +
+					"<div class=\"panel-body freebusyday\" id=\"" + id + "\"></div></div></div>");
+				
+
+			prevdayofweek = obj.day_of_week;
+		});
+	});
+	
+	  
+	  
      $("#lecturerfield").select2({
 	   placeholder: "Kies een docent",
 	   minimumInputLength: 1,

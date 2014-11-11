@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Roosterious v0.5alpha</a>
+                <a class="navbar-brand" href="index.html">Roosterious v0.5beta</a>
             </div>
             <!-- /.navbar-header -->
 
