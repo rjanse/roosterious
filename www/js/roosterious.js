@@ -314,23 +314,32 @@ function loadExt(extType) {
       window.location = "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".json";
     } else if (extType == "csv") {
       window.location = "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".csv";
-    }
+    } 
   } else {
-    alert("Kies eerst een rooster");  
+    alert("Kies eerst een rooster");
   }
 }
 
 //Copy link to external file to clipboard
 function copyExt(extType) {
-	var url = "http://www.roosterious.nl/";
-	if (extType == "iCal") {
-      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".ical";
-    } else if (extType == "json") {
-      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".json";
-    } else if (extType == "csv") {
-      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".csv";
-    }
-    
-    $('#copyexturl').html(url);
-    $('#copyext').modal({});
+	// currentScheduleType = "lecturer"
+	// currentScheduleId = "rja01"
+	if (currentScheduleType != "") {
+		if (extType == "qw"){
+			var url = "http://quarterweeks.herokuapp.com/" + currentScheduleId;
+		} else {
+			var url = "http://www.roosterious.nl/";
+			if (extType == "iCal") {
+		      url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".ical";
+		  } else if (extType == "json") {
+		    url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".json";
+		  } else if (extType == "csv") {
+		    url += "api/schedule/" + currentScheduleType + "/" + currentScheduleId + ".csv";
+		  }
+		}
+  	$('#copyexturl').html(url);
+		$('#copyext').modal({});
+	} else {
+  	alert("Kies eerst een rooster");
+	}
 }

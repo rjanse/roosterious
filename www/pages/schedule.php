@@ -66,6 +66,7 @@
         <div class="panel-heading">
           <span>&nbsp;</span>
           <div class="pull-right">
+						<a id="qw" href="#" onClick="copyExt('qw');" target="blank" class="btn btn-xs btn-default" role="button"></a>
             <div class="btn-group">
                 <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
                     Download rooster
@@ -113,7 +114,7 @@
         $("#unitselectorview").show();
         $("#searcharea").addClass("panel-red");
         $("#schedulearea > div:first > span").html("Lesrooster van <strong>niemand</strong>. Kies hierhoven een docent");
-        
+        $("a#qw").html("Download kwartielweken");
         placeholdertext = "Klik om een docent te zoeken";
       } else if (type == "class") {
         $("#searcharea > div:first").html("Toon rooster van klas");
